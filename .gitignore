@@ -10,15 +10,20 @@
 /node_modules
 npm-debug.log
 yarn-error.log
+pnpm-debug.log
+logs/
+*.log
 
 # IDEs and editors
 .idea/
 .project
 .classpath
+.settings/
 .c9/
 *.launch
 .settings/
 *.sublime-workspace
+.history
 
 # Visual Studio Code
 .vscode/*
@@ -40,3 +45,12 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Angular
+/.angular/cache
+/coverage
