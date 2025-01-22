@@ -1,1 +1,45 @@
-/* You can add global styles to this file, and also import other style files */
+/* Variables globales */
+:root {
+    --primary-font: 'Roboto', 'Helvetica Neue', sans-serif;
+    --body-bg: #ffffff;
+    --text-color: #333333;
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos base */
+html,
+body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+    font-family: var(--primary-font);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-color);
+    background-color: var(--body-bg);
+}
+
+/* Utilidades globales */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+}
