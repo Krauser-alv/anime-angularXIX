@@ -1,9 +1,12 @@
 module.exports = {
   content: [
-    "./src/**/*.{html,ts}" // Incluye todos los archivos .html y .ts dentro de src/
+    "./src/**/*.{html,ts}", // Incluye todos los archivos .html y .ts dentro de src/
+    "./node_modules/flowbite/**/*.js"
   ],
   theme: {
-    extend: {}, // Personaliza aquí tu configuración
+    extend: {},
   },
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin')
+  ]
 };
