@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Variables globales */
 :root {
     --primary-font: 'Roboto', 'Helvetica Neue', sans-serif;
