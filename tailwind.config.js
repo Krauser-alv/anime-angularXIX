@@ -4,7 +4,16 @@ module.exports = {
     "./node_modules/flowbite/**/*.js"
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: "#fdcd44",   // Amarillo dorado (Botones y elementos llamativos)
+        textSecondary: "#C4B7A6", // Beige grisáceo para texto secundario
+        secondary: "#f05e7b", // Rosa coral (Acentos y hover en botones)
+        accent: "#6c5b7b",    // Púrpura grisáceo (Fondos secundarios)
+        background: "#2c2e3e", // Fondo oscuro general
+        details: "#1b2021",      // Texto y detalles oscuros
+      },
+    },
   },
   plugins: [
     require('flowbite/plugin')
