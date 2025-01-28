@@ -3,11 +3,11 @@ import { Observable } from 'rxjs';
 import { AnimesService } from '../../../../core/services/animes.service';
 import { AnimeSlider } from '../../models/anime-slider';
 import { PosterCardComponent } from '../../../../shared/components/poster-card/poster-card.component';
-import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
-  imports: [PosterCardComponent],
+  imports: [PosterCardComponent, CommonModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
