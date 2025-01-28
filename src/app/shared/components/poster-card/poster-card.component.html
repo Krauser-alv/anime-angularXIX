@@ -3,14 +3,14 @@
     <div class="relative w-full h-full">
         <!-- <app-circular-progress [rating]="model?.rating"></app-circular-progress> -->
         <img class="w-full h-full object-cover rounded-t select-none transition-transform duration-400 min-h-[135px] hover:scale-110"
-            loading="lazy" [src]="imageapiUrl(model.images.poster)" [alt]="model?.title || model?.name">
+            loading="lazy" [src]="imageApiUrl(model.images.poster)" [alt]="model?.title || model?.name">
         <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white p-1">
-            <a [routerLink]="isMovie ? '/movies/' + model.id : '/tv-shows/' + model.id"
+            <a
                 [title]="model?.title || model?.name" class="font-semibold text-base hover:text-blue-600">
                 {{ model?.title || model?.name }}
             </a>
             <p class="text-sm text-gray-300 mt-1">
-                {{ model?.release_date | date:'d MMMM, yyyy' }}
+                {{ model?.release_date | date:'MMMM d, yyyy' }}
             </p>
         </div>
     </div>
