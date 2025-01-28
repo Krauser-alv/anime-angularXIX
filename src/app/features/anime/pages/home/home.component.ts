@@ -1,5 +1,4 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
-import { Observable } from 'rxjs';
 import { AnimesService } from '../../../../core/services/animes.service';
 import { AnimeSlider } from '../../models/anime-slider';
 import { PosterCardComponent } from '../../../../shared/components/poster-card/poster-card.component';
@@ -31,10 +30,5 @@ export class HomeComponent {
     } catch (error) {
       console.error('Error:', error);
     }
-  }
-
-  onChangeTab(tabIndex: number) {
-    this.selectedAnimeTab = tabIndex;
-    this.getSliderAnimes(this.movieTabList[tabIndex]);
   }
 }
