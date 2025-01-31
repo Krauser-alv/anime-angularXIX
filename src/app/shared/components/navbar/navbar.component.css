@@ -1,0 +1,7 @@
+.fixed-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* Asegúrate de que la barra de navegación esté por encima de otros elementos */
+}
