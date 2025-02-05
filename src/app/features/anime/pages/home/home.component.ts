@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal } from '@angular/core';
 import { AnimesService } from '../../../../core/services/animes.service';
 import { AnimeSlider } from '../../models/anime-slider';
 import { PosterCardComponent } from '../../../../shared/components/poster-card/poster-card.component';
@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class HomeComponent {
+  public isLoading = signal(false);
   private animeService = inject(AnimesService);
   movieTabList = ['lasted anime', 'Anime upgraded'];
   animeList: Array<AnimeSlider> = [];
@@ -25,10 +26,14 @@ export class HomeComponent {
 
   private async getSliderAnimes(type: string) {
     try {
+      this.isLoading.set(true);
       const response = await this.animeService.getSliderAnimes(type) as { data: { posts: AnimeSlider[] } };
       this.animeList = response.data.posts;
     } catch (error) {
       console.error('Error:', error);
+    } finally {
+      this.isLoading.set(false);
     }
   }
+  
 }
