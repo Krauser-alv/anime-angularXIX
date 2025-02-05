@@ -18,8 +18,26 @@
             </svg>
             Anime recommendation
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <app-poster-card *ngFor="let anime of animeList" [model]="anime"></app-poster-card>
+        
+        <div [@fadeAnimation]>
+            <swiper-container
+                appSwiper
+                [config]="config"
+                pagination="true"
+                scrollbar="false"
+                *ngIf="animeList.length > 0; else emptyAnime">
+                <swiper-slide *ngFor="let anime of animeList | slice:0:15" [@slideAnimation]>
+                    <app-poster-card [model]="anime"></app-poster-card>
+                </swiper-slide>
+            </swiper-container>
+
+            <ng-template #emptyAnime>
+                <div class="flex justify-center items-center h-40">
+                    <p class="text-white text-lg text-center p-4 bg-gray-800 bg-opacity-75" [@fadeAnimation]>
+                        No hay animes disponibles
+                    </p>
+                </div>
+            </ng-template>
         </div>
 
     </section>
