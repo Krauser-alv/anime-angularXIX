@@ -1,3 +1,6 @@
+@import 'swiper/css';
+@import 'swiper/css/effect-coverflow';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
