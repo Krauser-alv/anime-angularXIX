@@ -5,6 +5,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      animation: {
+        bounce: 'bounce 1s infinite',
+        pulse: 'pulse 1s infinite',
+      },
       colors: {
         primary: "#fdcd44",   // Amarillo dorado (Botones y elementos llamativos)
         textSecondary: "#C4B7A6", // Beige grisáceo para texto secundario
