@@ -20,24 +20,19 @@
         </h2>
         
         <div [@fadeAnimation]>
-            <swiper-container
-                appSwiper
-                [config]="config"
-                pagination="true"
-                scrollbar="false"
-                *ngIf="animeList.length > 0; else emptyAnime">
-                <swiper-slide *ngFor="let anime of animeList | slice:0:15" [@slideAnimation]>
-                    <app-poster-card [model]="anime"></app-poster-card>
-                </swiper-slide>
+            <swiper-container appSwiper [config]="config" pagination="true" scrollbar="false">
+                @if (animeList.length > 0) {
+                    <swiper-slide *ngFor="let anime of animeList | slice:0:15" [@slideAnimation]>
+                        <app-poster-card [model]="anime"></app-poster-card>
+                    </swiper-slide>
+                } @else {
+                    <div class="flex justify-center items-center h-40">
+                        <p class="text-white text-lg text-center p-4 bg-gray-800 bg-opacity-75" [@fadeAnimation]>
+                            No hay animes disponibles
+                        </p>
+                    </div>
+                }
             </swiper-container>
-
-            <ng-template #emptyAnime>
-                <div class="flex justify-center items-center h-40">
-                    <p class="text-white text-lg text-center p-4 bg-gray-800 bg-opacity-75" [@fadeAnimation]>
-                        No hay animes disponibles
-                    </p>
-                </div>
-            </ng-template>
         </div>
 
     </section>
