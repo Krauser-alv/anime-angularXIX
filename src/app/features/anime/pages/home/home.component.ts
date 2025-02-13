@@ -1,6 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, signal } from '@angular/core';
 import { AnimesService } from '../../../../core/services/animes.service';
-import { AnimeSlider } from '../../models/anime-slider';
+import { AnimeSlider } from '../../../../core/models/anime-slider';
 import { PosterCardComponent } from '../../../../shared/components/poster-card/poster-card.component';
 import { CommonModule } from '@angular/common';
 import { SwiperDirective } from '../../../../shared/directives/swiper.directive';
