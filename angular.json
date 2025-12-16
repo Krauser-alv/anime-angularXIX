@@ -27,8 +27,12 @@
               }
             ],
             "styles": [
+              "tailwindcss/base.css",
+              "tailwindcss/components.css",
+              "tailwindcss/utilities.css",
               "src/styles.css",
               "node_modules/swiper/swiper.min.css",
+              "node_modules/swiper/swiper-bundle.css",
               "node_modules/swiper/modules/effect-coverflow.min.css"
             ],
             "scripts": [
@@ -54,7 +58,13 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environments.ts",
+                  "with": "src/environments/environments.prod.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
