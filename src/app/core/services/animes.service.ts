@@ -33,12 +33,12 @@ export class AnimesService {
     // range=today
     // range=week
     // range=month
-    getTopsAnimes(range: string, limit: number) {
+    getTopsAnimes(type: string, range: string, limit: number) {
         const url = this.apiUrl + 'tops';
         const params = {
-            post_type: 'animes',
+            post_type: type,
             range,
-            limit
+            limit: limit.toString()
         };
         const $response = this.http.get(url, { params });
         return lastValueFrom($response);
