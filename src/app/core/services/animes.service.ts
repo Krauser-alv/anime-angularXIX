@@ -43,4 +43,15 @@ export class AnimesService {
         const $response = this.http.get(url, { params });
         return lastValueFrom($response);
     }
+
+    //https://animehack.net/api/rest/listing/episodes
+    getDroppedAnimes(limit: number) {
+        const url = this.apiUrl + 'listing/episodes';
+        const params = {
+            page: '1',
+            posts_per_page: limit.toString()
+        };
+        const $response = this.http.get(url, { params });
+        return lastValueFrom($response);
+    }
 }
