@@ -7,6 +7,18 @@
     </div>
 </section>
 
+<app-episode-carousel 
+    title="Streaming episodes" 
+    [icon]="droppedIcon" 
+    [episodeList]="episodeList()"
+    [isLoading]="isLoadingDropped()" 
+    emptyStateTitle="No hay episodios disponibles"
+    emptyStateMessage="No se encontraron episodios en este momento. Intenta más tarde." 
+    emptyStateIcon="search"
+    sliderId="episodes" 
+    [limit]="SLIDER_LIMIT">
+</app-episode-carousel>
+
 <!-- Carrusel de recomendaciones -->
 <app-anime-carousel
     title="Anime recommendation"
