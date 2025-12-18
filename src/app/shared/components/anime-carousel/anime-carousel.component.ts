@@ -42,7 +42,7 @@ export class AnimeCarouselComponent implements OnInit, OnDestroy, OnChanges {
     slidesPerGroup: 1,
     speed: 800,
     autoplay: {
-      delay: 3000,
+      delay: 5000,
       disableOnInteraction: false,
       pauseOnMouseEnter: true,
     },
