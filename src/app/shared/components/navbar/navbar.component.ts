@@ -1,11 +1,12 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
 import { ProgressBarService } from '../../services/progress-bar.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [ProgressBarComponent],
+  imports: [ProgressBarComponent, RouterLink, RouterLinkActive],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
