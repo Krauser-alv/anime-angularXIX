@@ -1,165 +1,45 @@
-.container {
-    /* Mantén el resto de tus estilos originales */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    /* ... */
-  }
+/* Custom animations only - everything else is Tailwind */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
 
-  /* Resto del CSS permanece igual... */
-  
-  .scene {
-    position: relative;
-    width: 300px;
-    height: 300px;
-    margin: 2rem;
-  }
-  
-  /* Animación OVNI */
-  .ufo {
-    position: absolute;
-    animation: float 3s ease-in-out infinite;
-    z-index: 2;
-  }
-  
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
-  }
-  
-  .alien {
-    position: relative;
-    width: 80px;
-    height: 100px;
-    margin: 0 auto;
-  }
-  
-  .head {
-    width: 60px;
-    height: 60px;
-    background: #7CFC00;
-    border-radius: 50%;
-    position: absolute;
-    left: 10px;
-  }
-  
-  .body {
-    width: 80px;
-    height: 60px;
-    background: #7CFC00;
-    border-radius: 40px;
-    position: absolute;
-    top: 40px;
-  }
-  
-  .eyes {
-    position: absolute;
-    top: 20px;
-    left: 15px;
-    width: 50px;
-    height: 20px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .eyes::before, .eyes::after {
-    content: '';
-    width: 15px;
-    height: 20px;
-    background: #000;
-    border-radius: 50%;
-  }
-  
-  .light-beam {
-    position: absolute;
-    width: 30px;
-    height: 150px;
-    background: linear-gradient(to bottom, rgba(255,255,0,0.5), transparent);
-    left: 50%;
-    transform: translateX(-50%);
-    top: 100px;
-    animation: beam 2s infinite;
-  }
-  
-  @keyframes beam {
-    0% { opacity: 0.5; }
-    50% { opacity: 0.8; }
-    100% { opacity: 0.5; }
-  }
-  
-  /* Estrellas animadas */
-  .stars {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: 
-      radial-gradient(2px 2px at 20% 30%, #fff, rgba(255,255,255,0)),
-      radial-gradient(2px 2px at 80% 70%, #fff, rgba(255,255,255,0));
-    animation: twinkle 3s infinite;
-  }
-  
-  @keyframes twinkle {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-  }
-  
-  /* Texto animado */
-  .bounce {
-    animation: bounce 2s infinite;
-    text-align: center;
-    margin: 1rem 0;
-  }
-  
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-  }
-  
-  .message {
-    font-size: 1.2rem;
-    text-align: center;
-    opacity: 0.8;
-  }
-  
-  /* Botón neón */
-  .neon-button {
-    position: relative;
-    padding: 15px 30px;
-    font-size: 1.2rem;
-    background: #000;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    overflow: hidden;
-    transition: 0.2s;
-    margin-top: 2rem;
-  }
-  
-  .neon-button span {
-    position: absolute;
-    display: block;
-  }
-  
-  .neon-button span:nth-child(1) {
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #7CFC00);
-    animation: btn-anim1 2s infinite;
-  }
-  
-  @keyframes btn-anim1 {
-    0% { left: -100%; }
-    50%,100% { left: 100%; }
-  }
-  
-  .neon-button:hover {
-    background: #7CFC00;
-    color: #000;
-    box-shadow: 0 0 10px #7CFC00, 0 0 40px #7CFC00;
-    transition-delay: 0.1s;
-  }
+@keyframes beam {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes btn-anim {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-beam {
+  animation: beam 2s infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 3s infinite;
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 2s infinite;
+}
+
+.animate-btn-line {
+  animation: btn-anim 2s infinite;
+}
