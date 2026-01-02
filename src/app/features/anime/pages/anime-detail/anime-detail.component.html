@@ -1,0 +1,237 @@
+@if (isLoading()) {
+  <div class="flex justify-center items-center h-screen">
+    <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+  </div>
+} @else if (anime()) {
+  <!-- Banner con imagen de fondo -->
+  <section class="relative h-[400px] w-full overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
+    <img 
+      [src]="anime()!.images.backdrop" 
+      [alt]="anime()!.title"
+      class="w-full h-full object-cover"
+    />
+  </section>
+
+          <div class="container max-w-[1400px] mx-auto px-4 -mt-32 relative z-20">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <!-- Columna principal (3/4) -->
+      <div class="lg:col-span-3">
+        <!-- Información principal del anime -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+          <div class="flex flex-col md:flex-row gap-6">
+            <!-- Logo del anime -->
+            <div class="flex-shrink-0">
+              <img 
+                [src]="anime()!.images.poster" 
+                [alt]="anime()!.title"
+                class="w-48 h-72 object-cover rounded-lg shadow-md"
+              />
+            </div>
+
+            <!-- Información del lado derecho -->
+            <div class="flex-1">
+              <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                {{ anime()!.title }}
+              </h1>
+              
+              @if (anime()!.original_title) {
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+                  {{ anime()!.original_title }}
+                </p>
+              }
+
+              <!-- Categorías/Géneros -->
+              @if (anime()!.genres && anime()!.genres.length > 0) {
+                <div class="flex flex-wrap gap-2 mb-4">
+                  @for (genre of anime()!.genres; track genre) {
+                    <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
+                      Género {{ genre }}
+                    </span>
+                  }
+                </div>
+              }
+
+              <!-- Sinopsis -->
+              <p class="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                {{ anime()!.overview }}
+              </p>
+
+              <!-- Datos relevantes -->
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Tipo</p>
+                  <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.type }}</p>
+                </div>
+                @if (anime()!.runtime) {
+                  <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Duración</p>
+                    <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.runtime }}</p>
+                  </div>
+                }
+                @if (anime()!.release_date) {
+                  <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Estreno</p>
+                    <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.release_date }}</p>
+                  </div>
+                }
+                @if (anime()!.last_update) {
+                  <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Última actualización</p>
+                    <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.last_update }}</p>
+                  </div>
+                }
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Episodios</p>
+                  <p class="font-semibold text-gray-900 dark:text-white">{{ episodes().length }}</p>
+                </div>
+              </div>
+
+              <!-- Rating con estrellas -->
+              <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Calificación</p>
+                <app-star-rating
+                  [rating]="currentRating()"
+                  [totalVotes]="totalVotes()"
+                  [interactive]="true"
+                  [size]="'large'"
+                  (ratingChange)="onRatingChange($event)"
+                ></app-star-rating>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección de episodios -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Episodios</h2>
+
+          <!-- Selector de temporadas -->
+          @if (availableSeasons.length > 1) {
+            <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+              @for (season of availableSeasons; track season) {
+                <button
+                  (click)="selectSeason(season)"
+                  [class.bg-primary]="selectedSeason() === season"
+                  [class.text-white]="selectedSeason() === season"
+                  [class.bg-gray-200]="selectedSeason() !== season"
+                  [class.text-gray-700]="selectedSeason() !== season"
+                  class="px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+                >
+                  Temporada {{ season }}
+                </button>
+              }
+            </div>
+          }
+
+          <!-- Lista de episodios -->
+          @if (isLoadingEpisodes()) {
+            <div class="flex justify-center py-8">
+              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          } @else {
+            <div class="space-y-4">
+              @for (episode of getEpisodesBySeason(selectedSeason()); track episode._id) {
+                <div class="flex gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+                  <!-- Imagen del episodio -->
+                  <div class="flex-shrink-0">
+                    <img 
+                      [src]="episode.still_path" 
+                      [alt]="episode.title"
+                      class="w-40 h-24 object-cover rounded"
+                    />
+                  </div>
+
+                  <!-- Información del episodio -->
+                  <div class="flex-1">
+                    <div class="flex items-start justify-between mb-2">
+                      <div>
+                        <h3 class="font-semibold text-gray-900 dark:text-white">
+                          {{ episode.episode_number }}. {{ episode.title }}
+                        </h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                          {{ episode.runtime }} • {{ episode.episode_type }}
+                        </p>
+                      </div>
+                      <app-star-rating
+                        [rating]="parseFloat(episode.vote_average)"
+                        [totalVotes]="parseInt(episode.vote_count)"
+                        [size]="'small'"
+                      ></app-star-rating>
+                    </div>
+                    <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
+                      {{ episode.overview }}
+                    </p>
+                  </div>
+                </div>
+              } @empty {
+                <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                  No hay episodios disponibles para esta temporada
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Sidebar (1/4) -->
+      <div class="lg:col-span-1">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sticky top-4">
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Imágenes</h3>
+          
+          @if (anime()!.gallery) {
+            <div class="space-y-4">
+              <!-- Aquí irían las imágenes de la galería -->
+              <div class="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                <img 
+                  [src]="anime()!.images.backdrop" 
+                  [alt]="anime()!.title"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+              <div class="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                <img 
+                  [src]="anime()!.images.poster" 
+                  [alt]="anime()!.title"
+                  class="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          } @else {
+            <p class="text-gray-500 dark:text-gray-400 text-sm">No hay imágenes disponibles</p>
+          }
+
+          <!-- Información adicional -->
+          <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Información adicional</h4>
+            <div class="space-y-2 text-sm">
+              @if (anime()!.tagline) {
+                <div>
+                  <p class="text-gray-500 dark:text-gray-400">Tagline</p>
+                  <p class="text-gray-900 dark:text-white">{{ anime()!.tagline }}</p>
+                </div>
+              }
+              @if (anime()!.quality && anime()!.quality.length > 0) {
+                <div>
+                  <p class="text-gray-500 dark:text-gray-400">Calidad</p>
+                  <div class="flex flex-wrap gap-1 mt-1">
+                    @for (q of anime()!.quality; track q) {
+                      <span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">
+                        {{ q }}p
+                      </span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="flex flex-col items-center justify-center h-screen">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Anime no encontrado</h2>
+    <p class="text-gray-600 dark:text-gray-400">El anime que buscas no existe o ha sido eliminado</p>
+  </div>
+}

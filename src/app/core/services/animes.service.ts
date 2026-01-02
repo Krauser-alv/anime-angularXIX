@@ -46,4 +46,29 @@ export class AnimesService {
         const $response = this.http.get(url, { params });
         return lastValueFrom($response);
     }
+
+    getEpisodes(postId: string) {
+        const url = this.apiUrl + 'episodes';
+        const params = {
+            post_id: postId
+        };
+        const $response = this.http.get(url, { params });
+        return lastValueFrom($response);
+    }
+
+    getStarRating(postId: string, action: string) {
+        const url = this.apiUrl + 'star-rating';
+        const params = {
+            post_id: postId,
+            action
+        };
+        const $response = this.http.get(url, { params });
+        return lastValueFrom($response);
+    }
+
+    getAnimeBySlug(slug: string) {
+        const url = this.apiUrl + 'anime/' + slug;
+        const $response = this.http.get(url);
+        return lastValueFrom($response);
+    }
 }

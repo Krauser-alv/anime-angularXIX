@@ -1,12 +1,14 @@
-import { Component, input, signal, computed } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, input, signal, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { environment } from '../../../../environments/environments';
+import { StarRatingComponent } from '../star-rating/star-rating.component';
 
 @Component({
   selector: 'app-poster-card',
   imports: [
-    DatePipe
+    DatePipe,
+    StarRatingComponent
   ],
   templateUrl: './poster-card.component.html',
   styleUrl: './poster-card.component.css'
@@ -16,6 +18,7 @@ export class PosterCardComponent {
   model = input.required<any>();
   posterUrl!: string;
   imageError = signal(false);
+  private router = inject(Router);
 
   private readonly apiUrl = environment.apiUrl + 'wp-content/uploads';
 
@@ -27,21 +30,23 @@ export class PosterCardComponent {
     this.imageError.set(true);
   }
 
-  // Sistema de estrellas basado en rating (0-10 -> 0-5 estrellas)
-  stars = computed(() => {
+  navigateToDetail(): void {
+    const slug = this.model().slug;
+    if (slug) {
+      // Abrir en nueva pestaña
+      const url = this.router.serializeUrl(
+        this.router.createUrlTree(['/anime', slug])
+      );
+      window.open(url, '_blank');
+    }
+  }
+
+  get normalizedRating(): number {
     const rating = parseFloat(this.model().rating || '0');
-    // Convertir de escala 0-10 a 0-5
-    const normalizedRating = rating / 2;
-    
-    const fullStars = Math.floor(normalizedRating);
-    const hasHalfStar = normalizedRating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    
-    return {
-      full: Array(fullStars).fill(0),
-      half: hasHalfStar ? [0] : [],
-      empty: Array(emptyStars).fill(0),
-      rating: normalizedRating.toFixed(1)
-    };
-  });
+    return rating / 2; // Convertir de escala 0-10 a 0-5
+  }
+
+  get voteCount(): number {
+    return parseInt(this.model().vote_count || '0');
+  }
 }

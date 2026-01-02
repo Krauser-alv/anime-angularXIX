@@ -1,18 +1,21 @@
-import { Component, input, signal, computed } from '@angular/core';
+import { Component, input, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { Episode } from '../../../core/models/episode';
 import { environment } from '../../../../environments/environments';
+import { StarRatingComponent } from '../star-rating/star-rating.component';
 
 @Component({
   selector: 'app-episode-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, StarRatingComponent],
   templateUrl: './episode-card.component.html',
   styleUrls: ['./episode-card.component.css']
 })
 export class EpisodeCardComponent {
   episode = input.required<Episode>();
   imageError = signal(false);
+  private router = inject(Router);
   
   private readonly tmdbImageBaseUrl = environment.tmdbImageBaseUrl;
 
@@ -44,25 +47,27 @@ export class EpisodeCardComponent {
     return classes[this.episode().episode_type] || 'bg-gray-500';
   });
 
-  // Sistema de estrellas basado en vote_average (0-10 -> 0-5 estrellas)
-  stars = computed(() => {
+  get normalizedRating(): number {
     const rating = parseFloat(this.episode().vote_average || '0');
-    // Convertir de escala 0-10 a 0-5
-    const normalizedRating = rating / 2;
-    
-    const fullStars = Math.floor(normalizedRating);
-    const hasHalfStar = normalizedRating % 1 >= 0.5;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    
-    return {
-      full: Array(fullStars).fill(0),
-      half: hasHalfStar ? [0] : [],
-      empty: Array(emptyStars).fill(0),
-      rating: normalizedRating.toFixed(1)
-    };
-  });
+    return rating / 2; // Convertir de escala 0-10 a 0-5
+  }
+
+  get voteCount(): number {
+    return parseInt(this.episode().vote_count || '0');
+  }
 
   onImageError(): void {
     this.imageError.set(true);
+  }
+
+  navigateToAnime(): void {
+    const slug = this.episode().slug;
+    if (slug) {
+      // Abrir en nueva pestaña
+      const url = this.router.serializeUrl(
+        this.router.createUrlTree(['/anime', slug])
+      );
+      window.open(url, '_blank');
+    }
   }
 }
