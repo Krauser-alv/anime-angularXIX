@@ -10,11 +10,8 @@ export class AnimesService {
 
     private apiUrl = environment.apiUrl + 'api/rest/';
 
-    constructor(private http: HttpClient) {
-        // console.log('HttpClient:', http); // Depuración
-    }
+    constructor(private http: HttpClient) {}
 
-    //https://animehack.net/api/rest/listing?page=1&post_type=animes&posts_per_page=18&genres=&years=&order_by=latest
     getSliderAnimes(type: string, limit: number) {
         const url = this.apiUrl + 'listing';
         const params = {
@@ -29,10 +26,6 @@ export class AnimesService {
         return lastValueFrom($response);
     }
 
-    //https://animehack.net/api/rest/tops?post_type=animes&range=today&limit=30
-    // range=today
-    // range=week
-    // range=month
     getTopsAnimes(type: string, range: string, limit: number) {
         const url = this.apiUrl + 'tops';
         const params = {
@@ -44,7 +37,6 @@ export class AnimesService {
         return lastValueFrom($response);
     }
 
-    //https://animehack.net/api/rest/listing/episodes
     getDroppedAnimes(limit: number) {
         const url = this.apiUrl + 'listing/episodes';
         const params = {
