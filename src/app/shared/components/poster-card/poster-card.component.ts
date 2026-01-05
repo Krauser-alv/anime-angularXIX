@@ -31,13 +31,11 @@ export class PosterCardComponent {
   }
 
   navigateToDetail(): void {
-    const slug = this.model().slug;
-    if (slug) {
-      // Abrir en nueva pestaña
-      const url = this.router.serializeUrl(
-        this.router.createUrlTree(['/anime', slug])
-      );
-      window.open(url, '_blank');
+    const id = this.model()._id;
+    if (id) {
+      this.router.navigate(['/anime', id], {
+        state: { anime: this.model() }
+      });
     }
   }
 
