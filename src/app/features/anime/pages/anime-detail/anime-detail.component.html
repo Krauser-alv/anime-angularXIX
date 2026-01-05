@@ -1,13 +1,13 @@
 @if (isLoading()) {
   <div class="flex justify-center items-center h-screen">
-    <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+    <app-neon-loader></app-neon-loader>
   </div>
 } @else if (anime()) {
   <!-- Banner con imagen de fondo -->
   <section class="relative h-[400px] w-full overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
     <img 
-      [src]="anime()!.images.backdrop" 
+      [src]="imageApiUrl(anime()!.images.backdrop)" 
       [alt]="anime()!.title"
       class="w-full h-full object-cover"
     />
@@ -23,7 +23,7 @@
             <!-- Logo del anime -->
             <div class="flex-shrink-0">
               <img 
-                [src]="anime()!.images.poster" 
+                [src]="imageApiUrl(anime()!.images.poster)" 
                 [alt]="anime()!.title"
                 class="w-48 h-72 object-cover rounded-lg shadow-md"
               />
@@ -91,11 +91,10 @@
               <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Calificación</p>
                 <app-star-rating
-                  [rating]="currentRating()"
-                  [totalVotes]="totalVotes()"
-                  [interactive]="true"
+                  [rating]="currentRating"
+                  [totalVotes]="totalVotes"
+                  [interactive]="false"
                   [size]="'large'"
-                  (ratingChange)="onRatingChange($event)"
                 ></app-star-rating>
               </div>
             </div>
@@ -127,7 +126,7 @@
           <!-- Lista de episodios -->
           @if (isLoadingEpisodes()) {
             <div class="flex justify-center py-8">
-              <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <app-neon-loader></app-neon-loader>
             </div>
           } @else {
             <div class="space-y-4">
@@ -136,7 +135,7 @@
                   <!-- Imagen del episodio -->
                   <div class="flex-shrink-0">
                     <img 
-                      [src]="episode.still_path" 
+                      [src]="episodeImageUrl(episode.still_path)" 
                       [alt]="episode.title"
                       class="w-40 h-24 object-cover rounded"
                     />
@@ -179,23 +178,17 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sticky top-4">
           <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Imágenes</h3>
           
-          @if (anime()!.gallery) {
+          @if (galleryImages.length > 0) {
             <div class="space-y-4">
-              <!-- Aquí irían las imágenes de la galería -->
-              <div class="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-                <img 
-                  [src]="anime()!.images.backdrop" 
-                  [alt]="anime()!.title"
-                  class="w-full h-full object-cover"
-                />
-              </div>
-              <div class="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-                <img 
-                  [src]="anime()!.images.poster" 
-                  [alt]="anime()!.title"
-                  class="w-full h-full object-cover"
-                />
-              </div>
+              @for (imageUrl of galleryImages; track imageUrl) {
+                <div class="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                  <img 
+                    [src]="imageUrl" 
+                    [alt]="anime()!.title"
+                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              }
             </div>
           } @else {
             <p class="text-gray-500 dark:text-gray-400 text-sm">No hay imágenes disponibles</p>

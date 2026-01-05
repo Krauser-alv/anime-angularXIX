@@ -56,19 +56,13 @@ export class AnimesService {
         return lastValueFrom($response);
     }
 
-    getStarRating(postId: string, action: string) {
-        const url = this.apiUrl + 'star-rating';
+    getAnimeBySlug(postName: string, postType: string = 'animes') {
+        const url = this.apiUrl + 'single';
         const params = {
-            post_id: postId,
-            action
+            post_name: postName,
+            post_type: postType
         };
         const $response = this.http.get(url, { params });
-        return lastValueFrom($response);
-    }
-
-    getAnimeBySlug(slug: string) {
-        const url = this.apiUrl + 'anime/' + slug;
-        const $response = this.http.get(url);
         return lastValueFrom($response);
     }
 }
