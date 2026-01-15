@@ -29,6 +29,8 @@ export class AnimeDetailComponent implements OnInit {
   isLoadingEpisodes = signal(true);
   selectedSeason = signal(1);
   isGalleryExpanded = signal(false);
+  expandedEpisodes = signal<Set<number>>(new Set());
+  isOverviewExpanded = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -145,5 +147,26 @@ export class AnimeDetailComponent implements OnInit {
 
   toggleGallery(): void {
     this.isGalleryExpanded.set(!this.isGalleryExpanded());
+  }
+
+  toggleEpisodeOverview(episodeId: number): void {
+    const expanded = this.expandedEpisodes();
+    const newExpanded = new Set(expanded);
+    
+    if (newExpanded.has(episodeId)) {
+      newExpanded.delete(episodeId);
+    } else {
+      newExpanded.add(episodeId);
+    }
+    
+    this.expandedEpisodes.set(newExpanded);
+  }
+
+  isEpisodeExpanded(episodeId: number): boolean {
+    return this.expandedEpisodes().has(episodeId);
+  }
+
+  toggleOverview(): void {
+    this.isOverviewExpanded.set(!this.isOverviewExpanded());
   }
 }

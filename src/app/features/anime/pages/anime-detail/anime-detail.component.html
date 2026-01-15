@@ -42,7 +42,7 @@
               }
 
               <!-- Categorías/Géneros -->
-              @if (anime()!.genres && anime()!.genres.length > 0) {
+              <!-- @if (anime()!.genres && anime()!.genres.length > 0) {
                 <div class="flex flex-wrap gap-2 mb-4">
                   @for (genre of anime()!.genres; track genre) {
                     <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
@@ -50,12 +50,45 @@
                     </span>
                   }
                 </div>
-              }
+              } -->
 
               <!-- Sinopsis -->
-              <p class="text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                {{ anime()!.overview }}
-              </p>
+              <div class="mb-4">
+                <!-- Vista previa de la sinopsis (2 líneas solo en pantallas pequeñas/medianas) -->
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-2 lg:line-clamp-none mb-2">
+                  {{ anime()!.overview }}
+                </p>
+                
+                <!-- Botón para expandir/contraer (solo visible en pantallas pequeñas/medianas) -->
+                @if (anime()!.overview && anime()!.overview.length > 150) {
+                  <button
+                    (click)="toggleOverview()"
+                    class="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-200 transition-colors lg:hidden"
+                  >
+                    <span>{{ isOverviewExpanded() ? 'Ver menos' : 'Ver más' }}</span>
+                    <svg 
+                      class="w-4 h-4 transition-transform duration-200"
+                      [class.rotate-180]="isOverviewExpanded()"
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                  </button>
+                }
+
+                <!-- Sinopsis completa expandible (solo en pantallas pequeñas/medianas cuando está expandido) -->
+                @if (isOverviewExpanded()) {
+                  <div 
+                    class="overflow-hidden transition-all duration-300 ease-in-out lg:hidden"
+                  >
+                    <p class="text-gray-700 dark:text-gray-300 leading-relaxed pt-2">
+                      {{ anime()!.overview }}
+                    </p>
+                  </div>
+                }
+              </div>
 
               <!-- Datos relevantes -->
               <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
@@ -131,36 +164,77 @@
           } @else {
             <div class="space-y-4">
               @for (episode of getEpisodesBySeason(selectedSeason()); track episode._id) {
-                <div class="flex gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
-                  <!-- Imagen del episodio -->
-                  <div class="flex-shrink-0">
-                    <img 
-                      [src]="episodeImageUrl(episode.still_path)" 
-                      [alt]="episode.title"
-                      class="w-40 h-24 object-cover rounded"
-                    />
-                  </div>
-
-                  <!-- Información del episodio -->
-                  <div class="flex-1">
-                    <div class="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white">
-                          {{ episode.episode_number }}. {{ episode.title }}
-                        </h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          {{ episode.runtime }} • {{ episode.episode_type }}
-                        </p>
-                      </div>
-                      <app-star-rating
-                        [rating]="parseFloat(episode.vote_average)"
-                        [totalVotes]="parseInt(episode.vote_count)"
-                        [size]="'small'"
-                      ></app-star-rating>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <!-- Layout responsive: vertical en móvil, horizontal en desktop -->
+                  <div class="flex flex-col md:flex-row">
+                    <!-- Imagen del episodio -->
+                    <div class="flex-shrink-0 w-full md:w-40">
+                      <img 
+                        [src]="episodeImageUrl(episode.still_path)" 
+                        [alt]="episode.title"
+                        class="w-full h-48 md:h-24 object-cover"
+                      />
                     </div>
-                    <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-                      {{ episode.overview }}
-                    </p>
+
+                    <!-- Información del episodio -->
+                    <div class="flex-1 p-4">
+                      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2">
+                        <div class="flex-1">
+                          <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
+                            {{ episode.episode_number }}. {{ episode.title }}
+                          </h3>
+                          <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                            {{ episode.runtime }} • {{ episode.episode_type }}
+                          </p>
+                        </div>
+                        <div class="flex-shrink-0 mt-2 sm:mt-0 sm:ml-4">
+                          <app-star-rating
+                            [rating]="parseFloat(episode.vote_average)"
+                            [totalVotes]="parseInt(episode.vote_count)"
+                            [size]="'small'"
+                          ></app-star-rating>
+                        </div>
+                      </div>
+
+                      <!-- Botón para expandir sinopsis (solo visible en pantallas pequeñas/medianas) -->
+                      @if (episode.overview && episode.overview.trim()) {
+                        <button
+                          (click)="toggleEpisodeOverview(episode._id)"
+                          class="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-200 transition-colors mb-2 lg:hidden"
+                        >
+                          <span>{{ isEpisodeExpanded(episode._id) ? 'Ocultar' : 'Ver' }} sinopsis</span>
+                          <svg 
+                            class="w-4 h-4 transition-transform duration-200"
+                            [class.rotate-180]="isEpisodeExpanded(episode._id)"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                          </svg>
+                        </button>
+
+                        <!-- Sinopsis expandible (solo en pantallas pequeñas/medianas) -->
+                        <div 
+                          class="overflow-hidden transition-all duration-300 ease-in-out lg:hidden"
+                          [class.max-h-0]="!isEpisodeExpanded(episode._id)"
+                          [class.max-h-96]="isEpisodeExpanded(episode._id)"
+                          [class.opacity-0]="!isEpisodeExpanded(episode._id)"
+                          [class.opacity-100]="isEpisodeExpanded(episode._id)"
+                        >
+                          <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed pt-2">
+                            {{ episode.overview }}
+                          </p>
+                        </div>
+
+                        <!-- Sinopsis siempre visible en pantallas grandes -->
+                        <div class="hidden lg:block">
+                          <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {{ episode.overview }}
+                          </p>
+                        </div>
+                      }
+                    </div>
                   </div>
                 </div>
               } @empty {
@@ -175,16 +249,16 @@
 
       <!-- Sidebar (1/4) -->
       <div class="lg:col-span-1">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sticky top-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-hidden lg:flex lg:flex-col">
           <!-- Header del acordeón -->
           <button 
             (click)="toggleGallery()"
-            class="w-full flex items-center justify-between text-left focus:outline-none lg:cursor-default lg:pointer-events-none"
+            class="w-full flex items-center justify-between text-left focus:outline-none lg:cursor-default lg:pointer-events-none mb-4"
           >
             <div class="flex items-center gap-2">
               <h3 class="text-xl font-bold text-gray-900 dark:text-white">Imágenes</h3>
               @if (galleryImages.length > 0) {
-                <span class="px-2 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-full text-sm font-medium">
                   {{ galleryImages.length }}
                 </span>
               }
@@ -201,15 +275,15 @@
             </svg>
           </button>
           
-          <!-- Contenido del acordeón -->
+          <!-- Contenido del acordeón con scroll independiente -->
           <div 
-            class="overflow-hidden transition-all duration-300 ease-in-out lg:!max-h-none lg:!opacity-100"
+            class="overflow-hidden transition-all duration-300 ease-in-out lg:!max-h-none lg:!opacity-100 lg:flex-1 lg:overflow-y-auto lg:pr-2"
             [class.max-h-0]="!isGalleryExpanded()"
             [class.max-h-[2000px]]="isGalleryExpanded()"
             [class.opacity-0]="!isGalleryExpanded()"
             [class.opacity-100]="isGalleryExpanded()"
           >
-            <div class="pt-4">
+            <div class="lg:space-y-4">
               @if (galleryImages.length > 0) {
                 <div class="space-y-4">
                   @for (imageUrl of galleryImages; track imageUrl) {
