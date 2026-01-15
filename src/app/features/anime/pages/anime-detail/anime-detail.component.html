@@ -176,46 +176,80 @@
       <!-- Sidebar (1/4) -->
       <div class="lg:col-span-1">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sticky top-4">
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Imágenes</h3>
-          
-          @if (galleryImages.length > 0) {
-            <div class="space-y-4">
-              @for (imageUrl of galleryImages; track imageUrl) {
-                <div class="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-                  <img 
-                    [src]="imageUrl" 
-                    [alt]="anime()!.title"
-                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
+          <!-- Header del acordeón -->
+          <button 
+            (click)="toggleGallery()"
+            class="w-full flex items-center justify-between text-left focus:outline-none lg:cursor-default lg:pointer-events-none"
+          >
+            <div class="flex items-center gap-2">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Imágenes</h3>
+              @if (galleryImages.length > 0) {
+                <span class="px-2 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
+                  {{ galleryImages.length }}
+                </span>
               }
             </div>
-          } @else {
-            <p class="text-gray-500 dark:text-gray-400 text-sm">No hay imágenes disponibles</p>
-          }
+            <!-- Icono solo visible en móvil -->
+            <svg 
+              class="w-5 h-5 text-gray-500 transition-transform duration-200 lg:hidden"
+              [class.rotate-180]="isGalleryExpanded()"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <!-- Contenido del acordeón -->
+          <div 
+            class="overflow-hidden transition-all duration-300 ease-in-out lg:!max-h-none lg:!opacity-100"
+            [class.max-h-0]="!isGalleryExpanded()"
+            [class.max-h-[2000px]]="isGalleryExpanded()"
+            [class.opacity-0]="!isGalleryExpanded()"
+            [class.opacity-100]="isGalleryExpanded()"
+          >
+            <div class="pt-4">
+              @if (galleryImages.length > 0) {
+                <div class="space-y-4">
+                  @for (imageUrl of galleryImages; track imageUrl) {
+                    <div class="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                      <img 
+                        [src]="imageUrl" 
+                        [alt]="anime()!.title"
+                        class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-gray-500 dark:text-gray-400 text-sm">No hay imágenes disponibles</p>
+              }
 
-          <!-- Información adicional -->
-          <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Información adicional</h4>
-            <div class="space-y-2 text-sm">
-              @if (anime()!.tagline) {
-                <div>
-                  <p class="text-gray-500 dark:text-gray-400">Tagline</p>
-                  <p class="text-gray-900 dark:text-white">{{ anime()!.tagline }}</p>
+              <!-- Información adicional -->
+              <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Información adicional</h4>
+                <div class="space-y-2 text-sm">
+                  @if (anime()!.tagline) {
+                    <div>
+                      <p class="text-gray-500 dark:text-gray-400">Tagline</p>
+                      <p class="text-gray-900 dark:text-white">{{ anime()!.tagline }}</p>
+                    </div>
+                  }
+                  @if (anime()!.quality && anime()!.quality.length > 0) {
+                    <div>
+                      <p class="text-gray-500 dark:text-gray-400">Calidad</p>
+                      <div class="flex flex-wrap gap-1 mt-1">
+                        @for (q of anime()!.quality; track q) {
+                          <span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">
+                            {{ q }}p
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  }
                 </div>
-              }
-              @if (anime()!.quality && anime()!.quality.length > 0) {
-                <div>
-                  <p class="text-gray-500 dark:text-gray-400">Calidad</p>
-                  <div class="flex flex-wrap gap-1 mt-1">
-                    @for (q of anime()!.quality; track q) {
-                      <span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">
-                        {{ q }}p
-                      </span>
-                    }
-                  </div>
-                </div>
-              }
+              </div>
             </div>
           </div>
         </div>

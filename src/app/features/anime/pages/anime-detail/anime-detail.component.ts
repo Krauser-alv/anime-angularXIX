@@ -28,6 +28,7 @@ export class AnimeDetailComponent implements OnInit {
   isLoading = signal(true);
   isLoadingEpisodes = signal(true);
   selectedSeason = signal(1);
+  isGalleryExpanded = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -140,5 +141,9 @@ export class AnimeDetailComponent implements OnInit {
   get totalVotes(): number {
     const votes = this.anime()?.vote_count;
     return votes ? parseInt(votes) : 0;
+  }
+
+  toggleGallery(): void {
+    this.isGalleryExpanded.set(!this.isGalleryExpanded());
   }
 }
