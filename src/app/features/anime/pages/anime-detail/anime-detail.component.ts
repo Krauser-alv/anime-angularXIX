@@ -60,6 +60,7 @@ export class AnimeDetailComponent implements OnInit {
   async loadAnimeBySlug(slug: string): Promise<void> {
     try {
       this.isLoading.set(true);
+      // Usar el endpoint correcto para obtener anime por slug
       const response: any = await this.animeService.getAnimeBySlug(slug, 'animes');
       if (response && response.data) {
         this.anime.set(response.data);
@@ -168,5 +169,14 @@ export class AnimeDetailComponent implements OnInit {
 
   toggleOverview(): void {
     this.isOverviewExpanded.set(!this.isOverviewExpanded());
+  }
+
+  navigateToEpisode(episode: Episode): void {
+    const anime = this.anime();
+    if (anime) {
+      this.router.navigate(['/anime', anime._id, 'episode', episode._id], {
+        state: { anime: anime, episode: episode }
+      });
+    }
   }
 }

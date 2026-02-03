@@ -24,7 +24,7 @@
                     @for (episode of displayedEpisodes(); track episode._id || $index) {
                         <swiper-slide>
                             <div class="relative px-2">
-                                <app-episode-card [episode]="episode"></app-episode-card>
+                                <app-episode-card [episode]="episode" [anime]="anime"></app-episode-card>
                             </div>
                         </swiper-slide>
                     }

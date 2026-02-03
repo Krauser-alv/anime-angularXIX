@@ -19,6 +19,7 @@ export class EpisodeCarouselComponent implements OnInit, OnDestroy, OnChanges {
   @Input() title: string = '';
   @Input() icon: string = '';
   @Input() episodeList: Episode[] = [];
+  @Input() anime: any = null; // Agregar input para el anime
   @Input() isLoading: boolean = false;
   @Input() emptyStateTitle: string = 'No hay episodios disponibles';
   @Input() emptyStateMessage: string = 'No se encontraron episodios en este momento. Intenta más tarde.';

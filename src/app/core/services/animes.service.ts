@@ -65,4 +65,40 @@ export class AnimesService {
         const $response = this.http.get(url, { params });
         return lastValueFrom($response);
     }
+
+    // Nuevo endpoint para obtener episodio por slug
+    getEpisodeBySlug(postName: string) {
+        const url = this.apiUrl + 'single';
+        const params = {
+            post_name: postName,
+            post_type: 'episodes'
+        };
+        const $response = this.http.get(url, { params });
+        return lastValueFrom($response);
+    }
+
+    // Nuevo endpoint para obtener el reproductor del episodio
+    getEpisodePlayer(postId: string) {
+        const url = this.apiUrl + 'player';
+        const params = {
+            post_id: postId,
+            _any: '1'
+        };
+        const $response = this.http.get(url, { params });
+        return lastValueFrom($response);
+    }
+
+    // Endpoint mejorado para listing con más opciones
+    getAnimesList(page: number = 1, orderBy: string = 'post_modified', order: string = 'desc', postType: string = 'animes', postsPerPage: number = 8) {
+        const url = this.apiUrl + 'listing';
+        const params = {
+            page: page.toString(),
+            order_by: orderBy,
+            order: order,
+            post_type: postType,
+            posts_per_page: postsPerPage.toString()
+        };
+        const $response = this.http.get(url, { params });
+        return lastValueFrom($response);
+    }
 }

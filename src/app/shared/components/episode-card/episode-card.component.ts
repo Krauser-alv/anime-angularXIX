@@ -14,6 +14,7 @@ import { StarRatingComponent } from '../star-rating/star-rating.component';
 })
 export class EpisodeCardComponent {
   episode = input.required<Episode>();
+  anime = input<any>(null); // Hacer opcional el anime
   imageError = signal(false);
   private router = inject(Router);
   
@@ -60,14 +61,30 @@ export class EpisodeCardComponent {
     this.imageError.set(true);
   }
 
-  navigateToAnime(): void {
-    const slug = this.episode().slug;
-    if (slug) {
-      // Abrir en nueva pestaña
-      const url = this.router.serializeUrl(
-        this.router.createUrlTree(['/anime', slug])
-      );
-      window.open(url, '_blank');
+  navigateToEpisode(): void {
+    const episode = this.episode();
+    const anime = this.anime();
+    
+    if (episode) {
+      // Si tenemos el anime completo, usar la ruta completa
+      if (anime) {
+        this.router.navigate(['/anime', anime._id, 'episode', episode._id], {
+          state: { anime: anime, episode: episode }
+        });
+      } else {
+        // Si no tenemos el anime, usar la ruta directa con slug del episodio
+        if (episode.slug) {
+          this.router.navigate(['/episode', episode.slug], {
+            state: { episode: episode }
+          });
+        } else {
+          // Fallback usando show_id si existe
+          const animeId = episode.show_id || episode._id;
+          this.router.navigate(['/anime', animeId, 'episode', episode._id], {
+            state: { episode: episode }
+          });
+        }
+      }
     }
   }
 }

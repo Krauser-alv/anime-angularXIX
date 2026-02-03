@@ -1,0 +1,159 @@
+@if (isLoading()) {
+  <div class="flex justify-center items-center h-screen">
+    <app-neon-loader></app-neon-loader>
+  </div>
+} @else if (episode()) {
+  <div class="min-h-screen dark:bg-background text-white">
+    <!-- Header con título del episodio -->
+    <div class="bg-gradient-to-b from-gray-900/80 to-transparent p-6">
+      <div class="container max-w-[1400px] mx-auto">
+        <button 
+          (click)="goBackToAnime()"
+          class="mb-4 flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Volver
+        </button>
+        
+        <!-- Información principal del episodio -->
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div class="flex-1">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">
+              {{ episodeTitle }}
+            </h1>
+            
+            @if (episodeOriginalTitle) {
+              <h2 class="text-xl text-gray-300 mb-2">
+                Titulo original: {{ anime()!.original_title }}
+              </h2>
+            }
+
+            <!-- Sinopsis del episodio -->
+            @if (episode()!.overview) {
+              <p class="text-gray-300 leading-relaxed max-w-4xl">
+                {{ episode()!.overview }}
+              </p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Barra de información del anime -->
+    @if (anime() && anime()!.title !== 'Anime') {
+      <div class="container max-w-[1400px] mx-auto">
+        <div class="bg-gray-900/50 rounded-lg p-4">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <!-- Duración (primero) -->
+            @if (episode()!.runtime && episode()!.runtime !== '' && episode()!.runtime !== '0') {
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">Duración:</span>
+                <span class="font-medium text-gray-300 flex items-center gap-1">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  {{ episode()!.runtime }} min
+                </span>
+              </div>
+            }
+
+            <!-- Rating (segundo) -->
+            @if (animeRating > 0) {
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">Rating:</span>
+                <div class="flex items-center gap-2">
+                  <app-star-rating 
+                    [rating]="animeRating" 
+                    [interactive]="false"
+                    [size]="'small'"
+                    [showRatingText]="false">
+                  </app-star-rating>
+                  <span class="text-gray-300 font-medium">{{ anime()!.rating }}/10</span>
+                </div>
+              </div>
+            }
+
+            <!-- Año (tercero) -->
+            @if (anime()!.release_date) {
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">Año:</span>
+                <span class="font-medium text-gray-300">{{ anime()!.release_date | date:'yyyy' }}</span>
+              </div>
+            }
+
+            <!-- Actualizado (último) -->
+            @if (anime()!.last_update) {
+              <div class="flex items-center gap-2">
+                <span class="text-gray-400">Actualizado:</span>
+                <span class="font-medium text-gray-300">{{ anime()!.last_update | date:'dd/MM/yyyy' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Espaciador -->
+    <div class="h-5"></div>
+
+    <!-- Reproductor de video -->
+    <div class="container max-w-[1400px] mx-auto px-6">
+      <!-- Video principal -->
+      <div class="bg-gray-900 rounded-lg overflow-hidden shadow-2xl">
+        <!-- Selector de servidores -->
+        @if (servers().length > 1) {
+          <div class="flex border-b border-gray-700">
+            <select 
+              (change)="selectServer(+$any($event.target).value)"
+              [value]="selectedServer()"
+              class="px-6 py-3 bg-blue-600 text-white font-medium border-none focus:outline-none focus:bg-blue-700 cursor-pointer min-w-[200px]"
+            >
+              @for (server of servers(); track $index) {
+                <option [value]="$index" class="bg-gray-800 text-white">
+                  {{ getServerDisplayName(server, $index) }}
+                </option>
+              }
+            </select>
+          </div>
+        }
+
+        <!-- Video iframe -->
+        <div class="relative aspect-video bg-black">
+          @if (videoUrl()) {
+            <iframe 
+              [src]="videoUrl()!"
+              class="w-full h-full"
+              frameborder="0"
+              allowfullscreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            ></iframe>
+          } @else {
+            <div class="flex items-center justify-center h-full">
+              <div class="text-center">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-gray-400 mb-2">Video no disponible</p>
+                <p class="text-sm text-gray-500">Episodio {{ episode()!.episode_number }} - {{ episode()!.title }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
+} @else {
+  <div class="flex flex-col items-center justify-center min-h-screen dark:bg-background px-4">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Episodio no encontrado</h2>
+    <p class="text-gray-600 dark:text-gray-400">El episodio que buscas no existe o ha sido eliminado</p>
+    <button 
+      (click)="goBackToAnime()"
+      class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+    >
+      Volver al anime
+    </button>
+  </div>
+}

@@ -164,7 +164,10 @@
           } @else {
             <div class="space-y-4">
               @for (episode of getEpisodesBySeason(selectedSeason()); track episode._id) {
-                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <div 
+                  (click)="navigateToEpisode(episode)"
+                  class="bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer"
+                >
                   <!-- Layout responsive: vertical en móvil, horizontal en desktop -->
                   <div class="flex flex-col md:flex-row">
                     <!-- Imagen del episodio -->
@@ -184,15 +187,25 @@
                             {{ episode.episode_number }}. {{ episode.title }}
                           </h3>
                           <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                            {{ episode.runtime }} • {{ episode.episode_type }}
+                            @if (episode.runtime && episode.runtime !== '' && episode.runtime !== '0') {
+                              {{ episode.runtime }} min
+                            }
+                            @if (episode.episode_type && (episode.runtime && episode.runtime !== '' && episode.runtime !== '0')) {
+                              •
+                            }
+                            @if (episode.episode_type) {
+                              {{ episode.episode_type }}
+                            }
                           </p>
                         </div>
                         <div class="flex-shrink-0 mt-2 sm:mt-0 sm:ml-4">
-                          <app-star-rating
-                            [rating]="parseFloat(episode.vote_average)"
-                            [totalVotes]="parseInt(episode.vote_count)"
-                            [size]="'small'"
-                          ></app-star-rating>
+                          @if (episode.vote_average && episode.vote_average !== '0' && parseFloat(episode.vote_average) > 0) {
+                            <app-star-rating
+                              [rating]="parseFloat(episode.vote_average)"
+                              [totalVotes]="parseInt(episode.vote_count || '0')"
+                              [size]="'small'"
+                            ></app-star-rating>
+                          }
                         </div>
                       </div>
 
