@@ -31,7 +31,9 @@ export class EpisodeWatchComponent implements OnInit {
   isLoading = signal(true);
   videoUrl = signal<SafeResourceUrl | null>(null);
   servers = signal<PlayerEmbed[]>([]);
+  downloads = signal<any[]>([]);
   selectedServer = signal<number>(0);
+  downloadsExpanded = signal<boolean>(false);
 
   ngOnInit(): void {
     const animeId = this.route.snapshot.paramMap.get('animeId');
@@ -243,6 +245,12 @@ export class EpisodeWatchComponent implements OnInit {
       if (response && response.data) {
         console.log('Player data structure:', response.data);
         
+        // Manejar downloads si existen
+        if (response.data.downloads && Array.isArray(response.data.downloads)) {
+          console.log('Found downloads:', response.data.downloads.length, 'download links');
+          this.downloads.set(response.data.downloads);
+        }
+        
         if (response.data.embeds && Array.isArray(response.data.embeds)) {
           console.log('Found embeds array:', response.data.embeds.length, 'servers');
           this.servers.set(response.data.embeds);
@@ -383,6 +391,10 @@ export class EpisodeWatchComponent implements OnInit {
     }
     
     return `${quality}-${lang}-${domain}`;
+  }
+
+  toggleDownloads(): void {
+    this.downloadsExpanded.set(!this.downloadsExpanded());
   }
 
   imageApiUrl(path: string): string {
