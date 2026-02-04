@@ -34,6 +34,7 @@ export class EpisodeWatchComponent implements OnInit {
   downloads = signal<any[]>([]);
   selectedServer = signal<number>(0);
   downloadsExpanded = signal<boolean>(false);
+  isOverviewExpanded = signal<boolean>(false);
 
   ngOnInit(): void {
     const animeId = this.route.snapshot.paramMap.get('animeId');
@@ -393,6 +394,10 @@ export class EpisodeWatchComponent implements OnInit {
 
   toggleDownloads(): void {
     this.downloadsExpanded.set(!this.downloadsExpanded());
+  }
+
+  toggleOverview(): void {
+    this.isOverviewExpanded.set(!this.isOverviewExpanded());
   }
 
   imageApiUrl(path: string): string {
