@@ -324,13 +324,11 @@ export class EpisodeWatchComponent implements OnInit {
   }
 
   goBackToAnime(): void {
-    const anime = this.anime();
-    if (anime && anime._id) {
-      this.router.navigate(['/anime', anime._id], {
-        state: { anime: anime }
-      });
+    // Usar el historial del navegador para volver a la página anterior
+    if (window.history.length > 1) {
+      window.history.back();
     } else {
-      // Si no hay anime, ir a la página principal
+      // Si no hay historial, ir al home
       this.router.navigate(['/']);
     }
   }
