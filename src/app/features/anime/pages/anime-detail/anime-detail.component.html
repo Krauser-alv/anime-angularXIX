@@ -201,42 +201,30 @@
                         </div>
                       </div>
 
-                      <!-- Botón para expandir sinopsis (solo visible en pantallas pequeñas/medianas) -->
+                      <!-- Sinopsis del episodio -->
                       @if (episode.overview && episode.overview.trim()) {
-                        <button
-                          (click)="toggleEpisodeOverview(episode._id)"
-                          class="flex items-center gap-2 text-sm text-amber-700 dark:text-amber-300 hover:text-amber-800 dark:hover:text-amber-200 transition-colors mb-2 lg:hidden"
-                        >
-                          <span>{{ isEpisodeExpanded(episode._id) ? 'Ocultar' : 'Ver' }} sinopsis</span>
-                          <svg 
-                            class="w-4 h-4 transition-transform duration-200"
-                            [class.rotate-180]="isEpisodeExpanded(episode._id)"
-                            fill="none" 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24"
-                          >
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                          </svg>
-                        </button>
-
-                        <!-- Sinopsis expandible (solo en pantallas pequeñas/medianas) -->
-                        <div 
-                          class="overflow-hidden transition-all duration-300 ease-in-out lg:hidden"
-                          [class.max-h-0]="!isEpisodeExpanded(episode._id)"
-                          [class.max-h-96]="isEpisodeExpanded(episode._id)"
-                          [class.opacity-0]="!isEpisodeExpanded(episode._id)"
-                          [class.opacity-100]="isEpisodeExpanded(episode._id)"
-                        >
-                          <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed pt-2">
-                            {{ episode.overview }}
-                          </p>
-                        </div>
-
-                        <!-- Sinopsis siempre visible en pantallas grandes -->
-                        <div class="hidden lg:block">
-                          <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                            {{ episode.overview }}
-                          </p>
+                        <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                          @if (episode.overview.length <= 150 || isEpisodeExpanded(episode._id)) {
+                            <p>{{ episode.overview }}
+                              @if (episode.overview.length > 150) {
+                                <button 
+                                  (click)="toggleEpisodeOverview(episode._id); $event.stopPropagation()"
+                                  class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
+                                >
+                                  Mostrar menos
+                                </button>
+                              }
+                            </p>
+                          } @else {
+                            <p>{{ episode.overview.substring(0, 150) }}...
+                              <button 
+                                (click)="toggleEpisodeOverview(episode._id); $event.stopPropagation()"
+                                class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
+                              >
+                                Mostrar más
+                              </button>
+                            </p>
+                          }
                         </div>
                       }
                     </div>
