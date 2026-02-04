@@ -34,23 +34,25 @@
             @if (episode()!.overview) {
               <div class="text-gray-700 dark:text-gray-300">
                 @if (episode()!.overview.length <= 150 || isOverviewExpanded()) {
-                  <p>{{ episode()!.overview }}</p>
-                  @if (episode()!.overview.length > 150) {
+                  <p>{{ episode()!.overview }}
+                    @if (episode()!.overview.length > 150) {
+                      <button 
+                        (click)="toggleOverview()"
+                        class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
+                      >
+                        Mostrar menos
+                      </button>
+                    }
+                  </p>
+                } @else {
+                  <p>{{ episode()!.overview.substring(0, 150) }}...
                     <button 
                       (click)="toggleOverview()"
-                      class="text-blue-500 hover:text-blue-400 text-sm mt-1 font-medium"
+                      class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
                     >
-                      Mostrar menos
+                      Mostrar más
                     </button>
-                  }
-                } @else {
-                  <p>{{ episode()!.overview.substring(0, 150) }}...</p>
-                  <button 
-                    (click)="toggleOverview()"
-                    class="text-blue-500 hover:text-blue-400 text-sm mt-1 font-medium"
-                  >
-                    Mostrar más
-                  </button>
+                  </p>
                 }
               </div>
             }
