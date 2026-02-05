@@ -28,6 +28,7 @@ export class EpisodeWatchComponent implements OnInit {
 
   anime = signal<AnimeSlider | null>(null);
   episode = signal<Episode | null>(null);
+  allEpisodes = signal<Episode[]>([]);
   isLoading = signal(true);
   videoUrl = signal<SafeResourceUrl | null>(null);
   servers = signal<PlayerEmbed[]>([]);
@@ -53,21 +54,26 @@ export class EpisodeWatchComponent implements OnInit {
     const navigation = this.router.getCurrentNavigation();
     const state = navigation?.extras?.state || window.history.state;
     
-    if (state && state['episode']) {
-      // Navegación desde anime-detail con state
+    if (state && state['episode'] && state['anime']) {
+      // Navegación desde anime-detail con state completo
+      console.log('Loading from state with complete data');
       this.episode.set(state['episode']);
+      this.anime.set(state['anime']);
       
-      if (state['anime']) {
-        this.anime.set(state['anime']);
-      } else if (animeId) {
-        this.loadAnimeById(animeId);
-      }
+      // Cargar todos los episodios para navegación
+      this.loadAllEpisodes();
       
-      // Cargar el reproductor del episodio
-      this.loadEpisodePlayer(episodeId!);
+      // Cargar el reproductor del episodio usando el ID del episodio del state
+      const episodeFromState = state['episode'];
+      this.loadEpisodePlayer(episodeFromState._id.toString());
       this.isLoading.set(false);
+    } else if (animeId && episodeId) {
+      // Navegación directa con IDs pero sin state - cargar datos desde API
+      console.log('Loading from API with IDs');
+      this.loadEpisodeAndAnimeById(animeId, episodeId);
     } else if (episodeId) {
-      // Navegación con ID de episodio pero sin state
+      // Solo ID de episodio - cargar datos básicos
+      console.log('Loading basic episode data');
       this.loadEpisodeById(episodeId);
     } else {
       console.warn('No se recibieron parámetros válidos');
@@ -98,8 +104,68 @@ export class EpisodeWatchComponent implements OnInit {
         episode_number: 1
       };
       this.episode.set(basicEpisode);
+      
+      // Intentar cargar el anime y episodios si es posible
+      await this.createBasicAnime('0');
+      await this.loadAllEpisodes();
     } catch (error) {
       console.error('Error loading episode by ID:', error);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async loadEpisodeAndAnimeById(animeId: string, episodeId: string): Promise<void> {
+    try {
+      this.isLoading.set(true);
+      console.log('Loading episode and anime by IDs:', animeId, episodeId);
+      
+      // Cargar el anime primero
+      const animeResponse: any = await this.animeService.getAnimeBySlug(animeId, 'animes');
+      if (animeResponse && animeResponse.data) {
+        this.anime.set(animeResponse.data);
+        console.log('Anime loaded:', animeResponse.data.title);
+        
+        // Cargar todos los episodios
+        await this.loadAllEpisodes();
+        
+        // Buscar el episodio específico en la lista cargada
+        const allEpisodes = this.allEpisodes();
+        const targetEpisode = allEpisodes.find(ep => ep._id.toString() === episodeId);
+        
+        if (targetEpisode) {
+          this.episode.set(targetEpisode);
+          console.log('Episode found in list:', targetEpisode.title);
+        } else {
+          // Si no se encuentra, crear un episodio básico
+          const basicEpisode: Episode = {
+            _id: parseInt(episodeId),
+            title: 'Episodio',
+            slug: '',
+            type: 'episode',
+            episode_type: 'standard',
+            overview: '',
+            runtime: '',
+            show_id: animeId,
+            still_path: '',
+            vote_average: '0',
+            vote_count: '0',
+            season_number: 1,
+            episode_number: 1
+          };
+          this.episode.set(basicEpisode);
+          console.log('Episode not found, using basic episode');
+        }
+        
+        // Cargar el reproductor
+        await this.loadEpisodePlayer(episodeId);
+      } else {
+        console.warn('Could not load anime data');
+        await this.loadEpisodeById(episodeId);
+      }
+    } catch (error) {
+      console.error('Error loading episode and anime by IDs:', error);
+      await this.loadEpisodeById(episodeId);
     } finally {
       this.isLoading.set(false);
     }
@@ -128,6 +194,9 @@ export class EpisodeWatchComponent implements OnInit {
           console.log('After setting - episode signal:', this.episode());
           console.log('After setting - anime signal:', this.anime());
           
+          // Cargar todos los episodios para navegación
+          this.loadAllEpisodes();
+          
           // Cargar el reproductor
           if (episodeData._id) {
             await this.loadEpisodePlayer(episodeData._id.toString());
@@ -140,6 +209,8 @@ export class EpisodeWatchComponent implements OnInit {
           // Crear un anime básico usando show_id si está disponible
           if (response.data.show_id) {
             await this.loadAnimeById(response.data.show_id);
+            // Cargar todos los episodios después de cargar el anime
+            await this.loadAllEpisodes();
           } else {
             await this.createBasicAnime('0');
           }
@@ -412,5 +483,177 @@ export class EpisodeWatchComponent implements OnInit {
     // Limpiar las barras escapadas y construir URL de TMDB
     const cleanPath = path.replace(/\\/g, '');
     return this.tmdbImageUrl + cleanPath;
+  }
+
+  // Métodos para navegación entre episodios
+  async loadAllEpisodes(): Promise<void> {
+    const anime = this.anime();
+    if (!anime || !anime._id) {
+      console.log('No anime available for loading episodes');
+      return;
+    }
+
+    try {
+      console.log('Loading all episodes for anime:', anime._id);
+      const response: any = await this.animeService.getEpisodes(anime._id.toString());
+      if (response && response.data) {
+        console.log('Loaded episodes:', response.data.length);
+        
+        // Log de los primeros episodios para debug
+        console.log('First 5 episodes before sorting:', response.data.slice(0, 5).map((ep: Episode) => ({
+          id: ep._id,
+          title: ep.title,
+          season: ep.season_number,
+          episode: ep.episode_number
+        })));
+        
+        // Ordenar episodios por temporada y número de episodio
+        const sortedEpisodes = response.data.sort((a: Episode, b: Episode) => {
+          if (a.season_number !== b.season_number) {
+            return a.season_number - b.season_number;
+          }
+          return a.episode_number - b.episode_number;
+        });
+        
+        console.log('First 5 episodes after sorting:', sortedEpisodes.slice(0, 5).map((ep: Episode) => ({
+          id: ep._id,
+          title: ep.title,
+          season: ep.season_number,
+          episode: ep.episode_number
+        })));
+        
+        this.allEpisodes.set(sortedEpisodes);
+        console.log('Episodes set:', this.allEpisodes().length);
+        
+        // Log del episodio actual y su posición
+        const currentEpisode = this.episode();
+        if (currentEpisode) {
+          const currentIndex = sortedEpisodes.findIndex((ep: Episode) => ep._id === currentEpisode._id);
+          console.log('Current episode in sorted list:', {
+            index: currentIndex,
+            id: currentEpisode._id,
+            title: currentEpisode.title
+          });
+          
+          if (currentIndex > 0) {
+            console.log('Previous episode would be:', {
+              id: sortedEpisodes[currentIndex - 1]._id,
+              title: sortedEpisodes[currentIndex - 1].title
+            });
+          }
+          
+          if (currentIndex < sortedEpisodes.length - 1) {
+            console.log('Next episode would be:', {
+              id: sortedEpisodes[currentIndex + 1]._id,
+              title: sortedEpisodes[currentIndex + 1].title
+            });
+          }
+        }
+        
+        // Forzar actualización de la vista después de cargar episodios
+        setTimeout(() => {
+          console.log('Forcing view update after episodes loaded');
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Error loading all episodes:', error);
+    }
+  }
+
+  getCurrentEpisodeIndex(): number {
+    const currentEpisode = this.episode();
+    const allEpisodes = this.allEpisodes();
+    
+    if (!currentEpisode || !allEpisodes.length) {
+      return -1;
+    }
+    
+    const index = allEpisodes.findIndex(ep => ep._id === currentEpisode._id);
+    return index;
+  }
+
+  getPreviousEpisode(): Episode | null {
+    const currentIndex = this.getCurrentEpisodeIndex();
+    const allEpisodes = this.allEpisodes();
+    
+    if (currentIndex <= 0 || !allEpisodes.length) {
+      return null;
+    }
+    
+    return allEpisodes[currentIndex - 1];
+  }
+
+  getNextEpisode(): Episode | null {
+    const currentIndex = this.getCurrentEpisodeIndex();
+    const allEpisodes = this.allEpisodes();
+    
+    if (currentIndex === -1 || currentIndex >= allEpisodes.length - 1) {
+      return null;
+    }
+    
+    return allEpisodes[currentIndex + 1];
+  }
+
+  canGoToPrevious(): boolean {
+    return this.getPreviousEpisode() !== null;
+  }
+
+  canGoToNext(): boolean {
+    return this.getNextEpisode() !== null;
+  }
+
+  canGoToAnime(): boolean {
+    const anime = this.anime();
+    return anime !== null && anime._id > 0 && anime.title !== 'Anime';
+  }
+
+  goToPreviousEpisode(): void {
+    const previousEpisode = this.getPreviousEpisode();
+    const anime = this.anime();
+    
+    console.log('Navigating to previous episode:', previousEpisode?.title);
+    console.log('Previous episode ID:', previousEpisode?._id);
+    console.log('Current episode ID:', this.episode()?._id);
+    console.log('Anime ID:', anime?._id);
+    
+    if (previousEpisode && anime) {
+      // Usar router con configuración especial para permitir navegación a la misma ruta
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate(['/anime', anime._id, 'episode', previousEpisode._id], {
+          state: { anime: anime, episode: previousEpisode }
+        });
+      });
+    }
+  }
+
+  goToNextEpisode(): void {
+    const nextEpisode = this.getNextEpisode();
+    const anime = this.anime();
+    
+    console.log('Navigating to next episode:', nextEpisode?.title);
+    console.log('Next episode ID:', nextEpisode?._id);
+    console.log('Current episode ID:', this.episode()?._id);
+    console.log('Anime ID:', anime?._id);
+    
+    if (nextEpisode && anime) {
+      // Usar router con configuración especial para permitir navegación a la misma ruta
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate(['/anime', anime._id, 'episode', nextEpisode._id], {
+          state: { anime: anime, episode: nextEpisode }
+        });
+      });
+    }
+  }
+
+  goToAnimeDetail(): void {
+    const anime = this.anime();
+    console.log('Navigating to anime detail:', anime?.title);
+    console.log('Anime ID:', anime?._id);
+    
+    if (anime && anime._id > 0) {
+      this.router.navigate(['/anime', anime._id], {
+        state: { anime: anime }
+      });
+    }
   }
 }

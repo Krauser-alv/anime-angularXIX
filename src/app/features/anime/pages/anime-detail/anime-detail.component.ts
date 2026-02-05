@@ -263,4 +263,22 @@ export class AnimeDetailComponent implements OnInit {
       });
     }
   }
+
+  formatLastUpdate(dateString: string): string {
+    if (!dateString) return '';
+    
+    // Extraer solo la fecha (YYYY-MM-DD) sin la hora
+    const datePart = dateString.split(' ')[0];
+    
+    try {
+      const date = new Date(datePart);
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    } catch (error) {
+      return datePart; // Devolver la fecha original si hay error
+    }
+  }
 }

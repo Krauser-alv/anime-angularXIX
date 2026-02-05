@@ -161,6 +161,64 @@
             </div>
           }
         </div>
+
+        <!-- Controles de navegación -->
+        <div class="bg-gray-800 border-t border-gray-700 p-4">
+          <div class="flex items-center justify-between">
+            <!-- Botón anterior -->
+            <button
+              (click)="goToPreviousEpisode(); $event.stopPropagation()"
+              [disabled]="!canGoToPrevious()"
+              class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+              type="button"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+              <span class="hidden sm:inline">Anterior</span>
+            </button>
+
+            <!-- Botón ir al anime -->
+            <button
+              (click)="goToAnimeDetail(); $event.stopPropagation()"
+              [disabled]="!canGoToAnime()"
+              class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
+              type="button"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span class="hidden sm:inline">Ver Anime</span>
+            </button>
+
+            <!-- Botón siguiente -->
+            <button
+              (click)="goToNextEpisode(); $event.stopPropagation()"
+              [disabled]="!canGoToNext()"
+              class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
+              type="button"
+            >
+              <span class="hidden sm:inline">Siguiente</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Información del episodio actual -->
+          @if (episode() && allEpisodes().length > 0) {
+            <div class="mt-3 pt-3 border-t border-gray-700">
+              <div class="flex items-center justify-between text-sm text-gray-400">
+                <span>
+                  Episodio {{ getCurrentEpisodeIndex() + 1 }} de {{ allEpisodes().length }}
+                </span>
+                <span>
+                  Temporada {{ episode()!.season_number }}
+                </span>
+              </div>
+            </div>
+          }
+        </div>
       </div>
 
       <!-- Sección de descargas (Acordión) -->
