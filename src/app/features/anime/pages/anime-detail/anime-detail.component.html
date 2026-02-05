@@ -154,8 +154,25 @@
               <app-neon-loader></app-neon-loader>
             </div>
           } @else {
+            <!-- Información de paginación -->
+            @if (getEpisodesBySeason(selectedSeason()).length > episodesPerPage) {
+              <div class="flex items-center justify-between mb-4 text-sm text-gray-600 dark:text-gray-400">
+                <span>
+                  Mostrando {{ (currentPage() - 1) * episodesPerPage + 1 }} - 
+                  {{ Math.min(currentPage() * episodesPerPage, getEpisodesBySeason(selectedSeason()).length) }} 
+                  de {{ getEpisodesBySeason(selectedSeason()).length }} episodios
+                </span>
+                <span>Página {{ currentPage() }} de {{ getTotalPages(selectedSeason()) }}</span>
+              </div>
+            }
+
             <div class="space-y-4">
-              @for (episode of getEpisodesBySeason(selectedSeason()); track episode._id) {
+              @if (getEpisodesBySeason(selectedSeason()).length === 0) {
+                <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                  No hay episodios disponibles para esta temporada
+                </div>
+              } @else {
+                @for (episode of getPaginatedEpisodes(selectedSeason()); track episode._id) {
                 <div 
                   (click)="navigateToEpisode(episode)"
                   class="bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer"
@@ -175,7 +192,10 @@
                     <div class="flex-1 p-4">
                       <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2">
                         <div class="flex-1">
-                          <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
+                          <h3 class="font-semibold text-gray-900 dark:text-white mb-1"
+                              [class.line-through]="isEpisodeWatched(episode._id)"
+                              [class.text-gray-500]="isEpisodeWatched(episode._id)"
+                              [class.dark:text-gray-400]="isEpisodeWatched(episode._id)">
                             {{ episode.episode_number }}. {{ episode.title }}
                           </h3>
                           <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
@@ -190,7 +210,9 @@
                             }
                           </p>
                         </div>
-                        <div class="flex-shrink-0 mt-2 sm:mt-0 sm:ml-4">
+                        
+                        <!-- Área de controles: Rating y Toggle -->
+                        <div class="flex flex-col items-end gap-2 flex-shrink-0 mt-2 sm:mt-0 sm:ml-4">
                           @if (episode.vote_average && episode.vote_average !== '0' && parseFloat(episode.vote_average) > 0) {
                             <app-star-rating
                               [rating]="parseFloat(episode.vote_average)"
@@ -198,6 +220,20 @@
                               [size]="'small'"
                             ></app-star-rating>
                           }
+                          
+                          <!-- Toggle para marcar como visto -->
+                          <label class="inline-flex items-center cursor-pointer" (click)="$event.stopPropagation()">
+                            <input 
+                              type="checkbox"
+                              [checked]="isEpisodeWatched(episode._id)"
+                              (change)="toggleWatchedEpisode(episode._id); $event.stopPropagation()"
+                              class="sr-only peer"
+                            />
+                            <div class="relative w-9 h-5 bg-gray-400 rounded-full peer dark:bg-gray-600 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500 dark:peer-checked:bg-green-500"></div>
+                            <span class="select-none ms-2 text-xs font-medium text-gray-600 dark:text-gray-400">
+                              {{ isEpisodeWatched(episode._id) ? 'Visto' : 'No visto' }}
+                            </span>
+                          </label>
                         </div>
                       </div>
 
@@ -232,10 +268,54 @@
                 </div>
               } @empty {
                 <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                  No hay episodios disponibles para esta temporada
+                  No hay más episodios en esta página
                 </div>
               }
+              }
             </div>
+
+            <!-- Paginación -->
+            @if (getTotalPages(selectedSeason()) > 1) {
+              <div class="flex items-center justify-center gap-2 mt-6">
+                <!-- Botón anterior -->
+                <button
+                  (click)="goToPreviousPage()"
+                  [disabled]="currentPage() === 1"
+                  class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </button>
+
+                <!-- Números de página -->
+                @for (pageNum of getPageNumbers(selectedSeason()); track pageNum) {
+                  <button
+                    (click)="goToPage(pageNum)"
+                    [class.bg-blue-600]="currentPage() === pageNum"
+                    [class.text-white]="currentPage() === pageNum"
+                    [class.bg-white]="currentPage() !== pageNum"
+                    [class.text-gray-500]="currentPage() !== pageNum"
+                    [class.dark:bg-gray-800]="currentPage() !== pageNum"
+                    [class.dark:text-gray-400]="currentPage() !== pageNum"
+                    class="px-3 py-2 text-sm font-medium border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    {{ pageNum }}
+                  </button>
+                }
+
+                <!-- Botón siguiente -->
+                <button
+                  (click)="goToNextPage()"
+                  [disabled]="currentPage() === getTotalPages(selectedSeason())"
+                  class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </button>
+              </div>
+            }
           }
         </div>
       </div>

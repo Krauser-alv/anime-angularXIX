@@ -31,6 +31,10 @@ export class AnimeDetailComponent implements OnInit {
   isGalleryExpanded = signal(false);
   expandedEpisodes = signal<Set<number>>(new Set());
   isOverviewExpanded = signal(false);
+  watchedEpisodes = signal<Set<number>>(new Set());
+  currentPage = signal(1);
+  episodesPerPage = 10;
+  Math = Math; // Para usar Math en el template
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -82,6 +86,8 @@ export class AnimeDetailComponent implements OnInit {
       const response: any = await this.animeService.getEpisodes(postId);
       if (response && response.data) {
         this.episodes.set(response.data);
+        // Cargar episodios vistos desde el caché
+        this.loadWatchedEpisodes(postId);
       }
     } catch (error) {
       console.error('Error loading episodes:', error);
@@ -90,8 +96,82 @@ export class AnimeDetailComponent implements OnInit {
     }
   }
 
+  loadWatchedEpisodes(animeId: string): void {
+    const cacheKey = `watched_episodes_${animeId}`;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        const watchedIds = JSON.parse(cached);
+        this.watchedEpisodes.set(new Set(watchedIds));
+      } catch (error) {
+        console.error('Error loading watched episodes from cache:', error);
+      }
+    }
+  }
+
+  saveWatchedEpisodes(animeId: string): void {
+    const cacheKey = `watched_episodes_${animeId}`;
+    const watchedArray = Array.from(this.watchedEpisodes());
+    localStorage.setItem(cacheKey, JSON.stringify(watchedArray));
+  }
+
+  toggleWatchedEpisode(episodeId: number): void {
+    const animeId = this.anime()?._id.toString();
+    if (!animeId) return;
+
+    const watched = this.watchedEpisodes();
+    const newWatched = new Set(watched);
+    
+    if (newWatched.has(episodeId)) {
+      newWatched.delete(episodeId);
+    } else {
+      newWatched.add(episodeId);
+    }
+    
+    this.watchedEpisodes.set(newWatched);
+    this.saveWatchedEpisodes(animeId);
+  }
+
+  isEpisodeWatched(episodeId: number): boolean {
+    return this.watchedEpisodes().has(episodeId);
+  }
+
   getEpisodesBySeason(season: number): Episode[] {
     return this.episodes().filter(ep => ep.season_number === season);
+  }
+
+  getPaginatedEpisodes(season: number): Episode[] {
+    const seasonEpisodes = this.getEpisodesBySeason(season);
+    const startIndex = (this.currentPage() - 1) * this.episodesPerPage;
+    const endIndex = startIndex + this.episodesPerPage;
+    return seasonEpisodes.slice(startIndex, endIndex);
+  }
+
+  getTotalPages(season: number): number {
+    const seasonEpisodes = this.getEpisodesBySeason(season);
+    return Math.ceil(seasonEpisodes.length / this.episodesPerPage);
+  }
+
+  goToPage(page: number): void {
+    this.currentPage.set(page);
+  }
+
+  goToNextPage(): void {
+    const totalPages = this.getTotalPages(this.selectedSeason());
+    if (this.currentPage() < totalPages) {
+      this.currentPage.set(this.currentPage() + 1);
+    }
+  }
+
+  goToPreviousPage(): void {
+    if (this.currentPage() > 1) {
+      this.currentPage.set(this.currentPage() - 1);
+    }
+  }
+
+  getPageNumbers(season: number): number[] {
+    const totalPages = this.getTotalPages(season);
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
   get availableSeasons(): number[] {
@@ -101,6 +181,7 @@ export class AnimeDetailComponent implements OnInit {
 
   selectSeason(season: number): void {
     this.selectedSeason.set(season);
+    this.currentPage.set(1); // Resetear a la primera página al cambiar de temporada
   }
 
   parseFloat(value: string): number {
@@ -174,6 +255,9 @@ export class AnimeDetailComponent implements OnInit {
   navigateToEpisode(episode: Episode): void {
     const anime = this.anime();
     if (anime) {
+      // Marcar episodio como visto al hacer clic
+      this.toggleWatchedEpisode(episode._id);
+      
       this.router.navigate(['/anime', anime._id, 'episode', episode._id], {
         state: { anime: anime, episode: episode }
       });
