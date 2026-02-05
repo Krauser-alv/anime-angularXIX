@@ -83,7 +83,7 @@
               </div>
 
               <!-- Datos relevantes -->
-              <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                 <div>
                   <p class="text-sm text-gray-500 dark:text-gray-400">Tipo</p>
                   <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.type }}</p>
@@ -100,6 +100,10 @@
                     <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.release_date }}</p>
                   </div>
                 }
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Episodios</p>
+                  <p class="font-semibold text-gray-900 dark:text-white">{{ episodes().length }}</p>
+                </div>
                 @if (anime()!.last_update) {
                   <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Última actualización</p>
@@ -107,20 +111,16 @@
                   </div>
                 }
                 <div>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">Episodios</p>
-                  <p class="font-semibold text-gray-900 dark:text-white">{{ episodes().length }}</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Calificación</p>
+                  <div class="flex items-center">
+                    <app-star-rating
+                      [rating]="currentRating"
+                      [totalVotes]="totalVotes"
+                      [interactive]="false"
+                      [size]="'large'"
+                    ></app-star-rating>
+                  </div>
                 </div>
-              </div>
-
-              <!-- Rating con estrellas -->
-              <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Calificación</p>
-                <app-star-rating
-                  [rating]="currentRating"
-                  [totalVotes]="totalVotes"
-                  [interactive]="false"
-                  [size]="'large'"
-                ></app-star-rating>
               </div>
             </div>
           </div>
