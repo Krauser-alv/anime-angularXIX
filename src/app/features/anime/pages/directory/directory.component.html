@@ -1,0 +1,163 @@
+<div class="min-h-screen dark:bg-background bg-gray-50">
+  <!-- Header -->
+  <div class="bg-gradient-to-b from-white/80 to-transparent dark:from-gray-900/80 dark:to-transparent p-6">
+    <div class="container max-w-[1400px] mx-auto">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+        Directorio de Animes
+      </h1>
+    </div>
+  </div>
+
+  <div class="container max-w-[1400px] mx-auto px-6">
+    <!-- Barra de búsqueda -->
+    <div class="mb-6">
+      <app-search-input (searchChange)="onSearchChange($event)"></app-search-input>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white dark:bg-gray-900 rounded-lg p-6 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Ordenar por -->
+        <app-order-filter (orderChange)="onOrderChange($event)"></app-order-filter>
+
+        <!-- Filtro de géneros -->
+        <app-genre-filter (genresChange)="onGenresChange($event)"></app-genre-filter>
+
+        <!-- Filtro de años -->
+        <app-year-filter (yearsChange)="onYearsChange($event)"></app-year-filter>
+      </div>
+
+      <!-- Botón limpiar filtros -->
+      @if (hasActiveFilters) {
+        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            (click)="clearFilters()"
+            class="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Limpiar todos los filtros
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Resultados -->
+    @if (isLoading()) {
+      <div class="flex justify-center items-center py-20">
+        <app-neon-loader></app-neon-loader>
+      </div>
+    } @else if (animes().length > 0) {
+      <!-- Grid de animes -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 mb-8">
+        @for (anime of animes(); track anime._id) {
+          <app-poster-card [model]="anime"></app-poster-card>
+        }
+      </div>
+
+      <!-- Paginación -->
+      @if (totalPages() > 1) {
+        <div class="flex justify-center items-center gap-2 mt-8">
+          <!-- Botón anterior -->
+          <button
+            (click)="goToPage(currentPage() - 1)"
+            [disabled]="currentPage() === 1"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+
+          <!-- Números de página -->
+          <div class="flex gap-2">
+            @if (currentPage() > 2) {
+              <button
+                (click)="goToPage(1)"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                1
+              </button>
+              @if (currentPage() > 3) {
+                <span class="px-2 py-2 text-gray-600 dark:text-gray-400">...</span>
+              }
+            }
+
+            @if (currentPage() > 1) {
+              <button
+                (click)="goToPage(currentPage() - 1)"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                {{ currentPage() - 1 }}
+              </button>
+            }
+
+            <button
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold"
+            >
+              {{ currentPage() }}
+            </button>
+
+            @if (currentPage() < totalPages()) {
+              <button
+                (click)="goToPage(currentPage() + 1)"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                {{ currentPage() + 1 }}
+              </button>
+            }
+
+            @if (currentPage() < totalPages() - 1) {
+              @if (currentPage() < totalPages() - 2) {
+                <span class="px-2 py-2 text-gray-600 dark:text-gray-400">...</span>
+              }
+              <button
+                (click)="goToPage(totalPages())"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                {{ totalPages() }}
+              </button>
+            }
+          </div>
+
+          <!-- Botón siguiente -->
+          <button
+            (click)="goToPage(currentPage() + 1)"
+            [disabled]="currentPage() === totalPages()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Info de página -->
+        <div class="text-center mt-4 text-sm text-gray-600 dark:text-gray-400">
+          Página {{ currentPage() }} de {{ totalPages() }}
+        </div>
+      }
+    } @else {
+      <div class="text-center py-20">
+        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          No se encontraron animes
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          Intenta ajustar los filtros de búsqueda
+        </p>
+        @if (hasActiveFilters) {
+          <button
+            (click)="clearFilters()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Limpiar filtros
+          </button>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -101,4 +101,31 @@ export class AnimesService {
         const $response = this.http.get(url, { params });
         return lastValueFrom($response);
     }
+
+    // Endpoint para directorio con filtros
+    getDirectoryAnimes(page: number = 1, postsPerPage: number = 30, genres: string = '', years: string = '', orderBy: string = 'modified') {
+        const url = this.apiUrl + 'listing';
+        const params: any = {
+            page: page.toString(),
+            post_type: 'animes',
+            posts_per_page: postsPerPage.toString(),
+            genres: genres,
+            years: years,
+            order_by: orderBy
+        };
+        const $response = this.http.get(url, { params });
+        return lastValueFrom($response);
+    }
+
+    // Endpoint para búsqueda
+    searchAnimes(query: string, postsPerPage: number = 4) {
+        const url = this.apiUrl + 'search';
+        const params = {
+            post_type: 'animes',
+            query: query,
+            posts_per_page: postsPerPage.toString()
+        };
+        const $response = this.http.get(url, { params });
+        return lastValueFrom($response);
+    }
 }
