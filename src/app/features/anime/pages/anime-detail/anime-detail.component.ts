@@ -85,7 +85,17 @@ export class AnimeDetailComponent implements OnInit {
       this.isLoadingEpisodes.set(true);
       const response: any = await this.animeService.getEpisodes(postId);
       if (response && response.data) {
-        this.episodes.set(response.data);
+        // Ordenar episodios correctamente por temporada y número de episodio
+        const sortedEpisodes = response.data.sort((a: Episode, b: Episode) => {
+          // Primero ordenar por temporada
+          if (a.season_number !== b.season_number) {
+            return a.season_number - b.season_number;
+          }
+          // Luego por número de episodio dentro de la temporada
+          return a.episode_number - b.episode_number;
+        });
+        
+        this.episodes.set(sortedEpisodes);
         // Cargar episodios vistos desde el caché
         this.loadWatchedEpisodes(postId);
       }
@@ -137,7 +147,9 @@ export class AnimeDetailComponent implements OnInit {
   }
 
   getEpisodesBySeason(season: number): Episode[] {
-    return this.episodes().filter(ep => ep.season_number === season);
+    const seasonEpisodes = this.episodes().filter(ep => ep.season_number === season);
+    // Asegurar que estén ordenados por número de episodio dentro de la temporada
+    return seasonEpisodes.sort((a, b) => a.episode_number - b.episode_number);
   }
 
   getPaginatedEpisodes(season: number): Episode[] {
