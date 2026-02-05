@@ -52,10 +52,11 @@ interface OrderOption {
 export class OrderFilterComponent {
   @Output() orderChange = new EventEmitter<string>();
 
-  selectedOrder = signal<string>('modified');
+  selectedOrder = signal<string>('latest');
   isOpen = signal(false);
 
   orderOptions: OrderOption[] = [
+    { value: 'latest', label: 'Más reciente' },
     { value: 'modified', label: 'Más Actualizados' },
     { value: 'a-z', label: 'A - Z' },
     { value: 'z-a', label: 'Z - A' }
