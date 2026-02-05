@@ -23,11 +23,9 @@
 }
 
 /* Estilos base */
-html,
-body {
-    height: 100%;
-    width: 100%;
+html {
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
 body {
@@ -37,6 +35,8 @@ body {
     line-height: 1.5;
     color: var(--text-color);
     background-color: var(--body-bg);
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
 /* Utilidades globales */
