@@ -36,6 +36,7 @@ export class EpisodeWatchComponent implements OnInit {
   selectedServer = signal<number>(0);
   downloadsExpanded = signal<boolean>(false);
   isOverviewExpanded = signal<boolean>(false);
+  isCurrentEpisodeWatched = signal<boolean>(false);
 
   ngOnInit(): void {
     const animeId = this.route.snapshot.paramMap.get('animeId');
@@ -66,6 +67,10 @@ export class EpisodeWatchComponent implements OnInit {
       // Cargar el reproductor del episodio usando el ID del episodio del state
       const episodeFromState = state['episode'];
       this.loadEpisodePlayer(episodeFromState._id.toString());
+      
+      // Cargar estado de episodios vistos
+      this.loadWatchedStatus();
+      
       this.isLoading.set(false);
     } else if (animeId && episodeId) {
       // Navegación directa con IDs pero sin state - cargar datos desde API
@@ -159,6 +164,9 @@ export class EpisodeWatchComponent implements OnInit {
         
         // Cargar el reproductor
         await this.loadEpisodePlayer(episodeId);
+        
+        // Cargar estado de episodios vistos
+        this.loadWatchedStatus();
       } else {
         console.warn('Could not load anime data');
         await this.loadEpisodeById(episodeId);
@@ -617,6 +625,12 @@ export class EpisodeWatchComponent implements OnInit {
     console.log('Anime ID:', anime?._id);
     
     if (previousEpisode && anime) {
+      // Marcar el episodio actual como visto antes de navegar
+      const currentEpisode = this.episode();
+      if (currentEpisode) {
+        this.markEpisodeAsWatched(currentEpisode._id, anime._id.toString());
+      }
+      
       // Usar router con configuración especial para permitir navegación a la misma ruta
       this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
         this.router.navigate(['/anime', anime._id, 'episode', previousEpisode._id], {
@@ -636,6 +650,12 @@ export class EpisodeWatchComponent implements OnInit {
     console.log('Anime ID:', anime?._id);
     
     if (nextEpisode && anime) {
+      // Marcar el episodio actual como visto antes de navegar
+      const currentEpisode = this.episode();
+      if (currentEpisode) {
+        this.markEpisodeAsWatched(currentEpisode._id, anime._id.toString());
+      }
+      
       // Usar router con configuración especial para permitir navegación a la misma ruta
       this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
         this.router.navigate(['/anime', anime._id, 'episode', nextEpisode._id], {
@@ -651,9 +671,101 @@ export class EpisodeWatchComponent implements OnInit {
     console.log('Anime ID:', anime?._id);
     
     if (anime && anime._id > 0) {
+      // Marcar el episodio actual como visto antes de navegar
+      const currentEpisode = this.episode();
+      if (currentEpisode) {
+        this.markEpisodeAsWatched(currentEpisode._id, anime._id.toString());
+      }
+      
       this.router.navigate(['/anime', anime._id], {
         state: { anime: anime }
       });
     }
+  }
+
+  // Método para marcar episodio como visto en localStorage
+  markEpisodeAsWatched(episodeId: number, animeId: string): void {
+    const cacheKey = `watched_episodes_${animeId}`;
+    let watchedEpisodes: number[] = [];
+    
+    // Cargar episodios vistos existentes
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        watchedEpisodes = JSON.parse(cached);
+      } catch (error) {
+        console.error('Error loading watched episodes from cache:', error);
+        watchedEpisodes = [];
+      }
+    }
+    
+    // Agregar el episodio actual si no está ya marcado
+    if (!watchedEpisodes.includes(episodeId)) {
+      watchedEpisodes.push(episodeId);
+      localStorage.setItem(cacheKey, JSON.stringify(watchedEpisodes));
+      console.log('Episode marked as watched:', episodeId);
+    }
+  }
+
+  // Cargar estado de episodios vistos
+  loadWatchedStatus(): void {
+    const anime = this.anime();
+    const episode = this.episode();
+    
+    if (!anime || !episode) return;
+    
+    const cacheKey = `watched_episodes_${anime._id}`;
+    const cached = localStorage.getItem(cacheKey);
+    
+    if (cached) {
+      try {
+        const watchedEpisodes: number[] = JSON.parse(cached);
+        this.isCurrentEpisodeWatched.set(watchedEpisodes.includes(episode._id));
+      } catch (error) {
+        console.error('Error loading watched episodes from cache:', error);
+        this.isCurrentEpisodeWatched.set(false);
+      }
+    } else {
+      this.isCurrentEpisodeWatched.set(false);
+    }
+  }
+
+  // Toggle del estado de visto del episodio actual
+  toggleCurrentEpisodeWatched(): void {
+    const anime = this.anime();
+    const episode = this.episode();
+    
+    if (!anime || !episode) return;
+    
+    const cacheKey = `watched_episodes_${anime._id}`;
+    let watchedEpisodes: number[] = [];
+    
+    // Cargar episodios vistos existentes
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+      try {
+        watchedEpisodes = JSON.parse(cached);
+      } catch (error) {
+        console.error('Error loading watched episodes from cache:', error);
+        watchedEpisodes = [];
+      }
+    }
+    
+    // Toggle del estado
+    const isCurrentlyWatched = watchedEpisodes.includes(episode._id);
+    if (isCurrentlyWatched) {
+      // Remover de la lista
+      watchedEpisodes = watchedEpisodes.filter(id => id !== episode._id);
+      this.isCurrentEpisodeWatched.set(false);
+      console.log('Episode unmarked as watched:', episode._id);
+    } else {
+      // Agregar a la lista
+      watchedEpisodes.push(episode._id);
+      this.isCurrentEpisodeWatched.set(true);
+      console.log('Episode marked as watched:', episode._id);
+    }
+    
+    // Guardar en localStorage
+    localStorage.setItem(cacheKey, JSON.stringify(watchedEpisodes));
   }
 }
