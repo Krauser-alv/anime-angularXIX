@@ -156,7 +156,8 @@ export class SearchInputComponent {
   }
 
   selectAnime(anime: any): void {
-    this.router.navigate(['/anime', anime._id]);
+    // Usar el slug en lugar del _id para la navegación
+    this.router.navigate(['/anime', anime.slug]);
     this.showResults.set(false);
     this.searchQuery = '';
     this.searchResults.set([]);
