@@ -1,4 +1,5 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { AnimesService } from '../../../../core/services/animes.service';
 import { AnimeSlider } from '../../../../core/models/anime-slider';
 import { Episode } from '../../../../core/models/episode';
@@ -8,7 +9,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
-  imports: [AnimeCarouselComponent, EpisodeCarouselComponent, CommonModule],
+  imports: [AnimeCarouselComponent, EpisodeCarouselComponent, CommonModule, RouterLink],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

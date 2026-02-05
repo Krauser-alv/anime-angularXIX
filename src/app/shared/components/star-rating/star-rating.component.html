@@ -24,7 +24,7 @@
   </div>
   @if (showRatingText) {
     <div class="flex items-center gap-1 text-sm">
-      <span class="text-gray-900 dark:text-white">{{ rating.toFixed(1) }}</span>
+      <span class="text-white">{{ rating.toFixed(1) }}</span>
       @if (totalVotes > 0) {
         <span class="text-gray-500 dark:text-gray-400">({{ totalVotes }})</span>
       }

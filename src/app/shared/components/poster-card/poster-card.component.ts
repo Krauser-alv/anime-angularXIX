@@ -23,6 +23,11 @@ export class PosterCardComponent {
   private readonly apiUrl = environment.apiUrl + 'wp-content/uploads';
 
   imageApiUrl(uuid: string): string {
+    // Si ya es una URL completa (de TMDB), devolverla directamente
+    if (uuid && (uuid.startsWith('http://') || uuid.startsWith('https://'))) {
+      return uuid;
+    }
+    // Si no, usar la API local
     return this.apiUrl + uuid;
   }
 
