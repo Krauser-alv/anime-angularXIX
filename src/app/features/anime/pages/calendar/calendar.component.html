@@ -77,8 +77,11 @@
               <div class="p-4 pt-0 animate-fade-in">
                 <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
                   @for (anime of entry[1]; track anime._id) {
-                    <div class="group h-[320px] sm:h-[340px] [perspective:1000px] cursor-pointer" (click)="navigateToAnime(anime._id)">
-                      <div class="relative h-full w-full transition-all duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
+                    <div class="group h-[320px] sm:h-[340px] [perspective:1000px]" 
+                         [class.cursor-pointer]="anime.isAvailable"
+                         (click)="anime.isAvailable && navigateToAnime(anime, $event)">
+                      <div class="relative h-full w-full transition-all duration-500 [transform-style:preserve-3d]"
+                           [class.group-hover:[transform:rotateY(180deg)]]="anime.isAvailable">
                         <!-- FRONT: Poster -->
                         <div class="absolute inset-0 h-full w-full [backface-visibility:hidden]">
                           <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow h-full flex flex-col">
@@ -96,6 +99,13 @@
                                 </svg>
                                 {{ anime.rating }}
                               </div>
+                              
+                              <!-- Badge "Próximamente" -->
+                              @if (!anime.isAvailable) {
+                                <div class="absolute top-1 left-1 bg-orange-500 text-white px-2 py-1 rounded-full text-[9px] font-bold shadow-lg">
+                                  Próximamente
+                                </div>
+                              }
                             </div>
                             
                             <div class="p-1.5 flex-shrink-0">
@@ -104,75 +114,87 @@
                               </h3>
                               
                               @if (anime.next_episode) {
-                                <div class="bg-purple-100 dark:bg-purple-900/30 rounded px-1.5 py-0.5">
+                                <div class="bg-purple-100 dark:bg-purple-900/30 rounded px-1.5 py-0.5 mb-1">
                                   <div class="text-purple-700 dark:text-purple-400 text-[9px] font-semibold">
                                     T{{ anime.next_episode.season_number }} E{{ anime.next_episode.episode_number }}
                                   </div>
                                 </div>
                               }
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- BACK: Detalles -->
-                        <div class="absolute inset-0 h-full w-full [backface-visibility:hidden] [transform:rotateY(180deg)]">
-                          <div class="bg-gradient-to-br from-purple-600 to-pink-600 dark:from-purple-700 dark:to-pink-700 rounded-lg overflow-hidden shadow-xl p-2 h-full flex flex-col justify-between">
-                            <div class="flex-1 flex flex-col justify-center space-y-2">
-                              <!-- Título -->
-                              <div class="text-center">
-                                <h3 class="font-bold text-white text-[10px] sm:text-xs mb-1 line-clamp-2">
-                                  {{ anime.title }}
-                                </h3>
-                              </div>
-
-                              <!-- Rating con estrellas -->
-                              <div class="bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
-                                <p class="text-white text-[9px] font-semibold mb-1 text-center">Rating</p>
-                                <div class="flex items-center justify-center mb-1">
-                                  <app-star-rating
-                                    [rating]="parseFloat(anime.rating) / 2"
-                                    [interactive]="false"
-                                    [size]="'small'"
-                                    [showRatingText]="false"
-                                  ></app-star-rating>
-                                </div>
-                                <p class="text-white text-[10px] text-center font-bold">
-                                  {{ anime.rating }} / 10
-                                </p>
-                              </div>
-
-                              <!-- Información del episodio -->
-                              @if (anime.next_episode) {
-                                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
-                                  <p class="text-white text-[9px] font-semibold mb-1 text-center">Próximo episodio</p>
-                                  <div class="text-center">
-                                    <p class="text-white text-sm sm:text-base font-bold mb-0.5">
-                                      T{{ anime.next_episode.season_number }} E{{ anime.next_episode.episode_number }}
-                                    </p>
-                                    @if (anime.next_episode.name) {
-                                      <p class="text-white/90 text-[9px] mb-0.5 line-clamp-1">
-                                        {{ anime.next_episode.name }}
-                                      </p>
-                                    }
-                                    <div class="flex items-center justify-center gap-0.5 text-white/90 text-[9px]">
-                                      <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                      </svg>
-                                      <span>{{ anime.next_episode.air_date | date:'dd/MM/yyyy' }}</span>
-                                    </div>
-                                  </div>
-                                </div>
+                              
+                              <!-- Botón sinopsis para animes no disponibles -->
+                              @if (!anime.isAvailable) {
+                                <button 
+                                  (click)="openModal(anime, $event)"
+                                  class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-[9px] font-bold py-1 px-2 rounded transition-all duration-300"
+                                >
+                                  Ver sinopsis
+                                </button>
                               }
                             </div>
-
-                            <!-- Botón de acción -->
-                            <button 
-                              class="w-full bg-white hover:bg-gray-100 text-purple-600 text-[9px] sm:text-[10px] font-bold py-1.5 px-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
-                            >
-                              Ver detalles
-                            </button>
                           </div>
                         </div>
+
+                        <!-- BACK: Detalles (solo si está disponible) -->
+                        @if (anime.isAvailable) {
+                          <div class="absolute inset-0 h-full w-full [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                            <div class="bg-gradient-to-br from-purple-600 to-pink-600 dark:from-purple-700 dark:to-pink-700 rounded-lg overflow-hidden shadow-xl p-2 h-full flex flex-col justify-between">
+                              <div class="flex-1 flex flex-col justify-center space-y-2">
+                                <!-- Título -->
+                                <div class="text-center">
+                                  <h3 class="font-bold text-white text-[10px] sm:text-xs mb-1 line-clamp-2">
+                                    {{ anime.title }}
+                                  </h3>
+                                </div>
+
+                                <!-- Rating con estrellas -->
+                                <div class="bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
+                                  <p class="text-white text-[9px] font-semibold mb-1 text-center">Rating</p>
+                                  <div class="flex items-center justify-center mb-1">
+                                    <app-star-rating
+                                      [rating]="parseFloat(anime.rating) / 2"
+                                      [interactive]="false"
+                                      [size]="'small'"
+                                      [showRatingText]="false"
+                                    ></app-star-rating>
+                                  </div>
+                                  <p class="text-white text-[10px] text-center font-bold">
+                                    {{ anime.rating }} / 10
+                                  </p>
+                                </div>
+
+                                <!-- Información del episodio -->
+                                @if (anime.next_episode) {
+                                  <div class="bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
+                                    <p class="text-white text-[9px] font-semibold mb-1 text-center">Próximo episodio</p>
+                                    <div class="text-center">
+                                      <p class="text-white text-sm sm:text-base font-bold mb-0.5">
+                                        T{{ anime.next_episode.season_number }} E{{ anime.next_episode.episode_number }}
+                                      </p>
+                                      @if (anime.next_episode.name) {
+                                        <p class="text-white/90 text-[9px] mb-0.5 line-clamp-1">
+                                          {{ anime.next_episode.name }}
+                                        </p>
+                                      }
+                                      <div class="flex items-center justify-center gap-0.5 text-white/90 text-[9px]">
+                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <span>{{ anime.next_episode.air_date | date:'dd/MM/yyyy' }}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                }
+                              </div>
+
+                              <!-- Botón de acción -->
+                              <button 
+                                class="w-full bg-white hover:bg-gray-100 text-purple-600 text-[9px] sm:text-[10px] font-bold py-1.5 px-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                              >
+                                Ver anime
+                              </button>
+                            </div>
+                          </div>
+                        }
                       </div>
                     </div>
                   }
@@ -193,4 +215,78 @@
       </div>
     }
   </div>
+
+  <!-- Modal de Sinopsis -->
+  @if (showModal() && selectedAnime()) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in" (click)="closeModal()">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden animate-scale-in" (click)="$event.stopPropagation()">
+        <!-- Header del Modal -->
+        <div class="relative h-48 overflow-hidden">
+          <img 
+            [src]="selectedAnime()!.images.poster" 
+            [alt]="selectedAnime()!.title"
+            class="w-full h-full object-cover blur-sm scale-110"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-white dark:from-gray-800 via-white/80 dark:via-gray-800/80 to-transparent"></div>
+          
+          <!-- Botón cerrar -->
+          <button 
+            (click)="closeModal()"
+            class="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-white rounded-full p-2 transition-all duration-300 shadow-lg"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Contenido del Modal -->
+        <div class="p-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
+          <!-- Título -->
+          <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            {{ selectedAnime()!.title }}
+          </h2>
+
+          <!-- Rating, Badge y Fecha en la misma línea -->
+          <div class="flex items-center gap-3 mb-6 flex-wrap">
+            <!-- Rating -->
+            <div class="flex items-center gap-2">
+              <app-star-rating
+                [rating]="parseFloat(selectedAnime()!.rating) / 2"
+                [interactive]="false"
+                [size]="'medium'"
+                [showRatingText]="false"
+              ></app-star-rating>
+              <span class="text-lg font-bold text-gray-900 dark:text-white">
+                {{ selectedAnime()!.rating }} / 10
+              </span>
+            </div>
+            
+            <!-- Badge Próximamente -->
+            <div class="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+              Próximamente
+            </div>
+
+            <!-- Fecha al final -->
+            @if (selectedAnime()!.next_episode) {
+              <div class="flex items-center gap-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 px-3 py-1 rounded-full text-sm font-semibold ml-auto">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span>{{ selectedAnime()!.next_episode!.air_date | date:'dd/MM/yyyy' }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Sinopsis -->
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">Sinopsis</h3>
+            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+              {{ selectedAnime()!.overview || 'No hay sinopsis disponible.' }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../../../../environments/environments';
 import { NeonLoaderComponent } from '../../../../shared/components/neon-loader/neon-loader.component';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
+import { AnimesService } from '../../../../core/services/animes.service';
 
 interface CalendarAnime {
   id: number;
@@ -36,6 +37,8 @@ interface TransformedAnime {
   overview: string;
   runtime?: string;
   next_episode?: EpisodeInfo;
+  isAvailable?: boolean;
+  slug?: string;
 }
 
 @Component({
@@ -51,16 +54,45 @@ export class CalendarComponent implements OnInit {
   animesByDate = signal<Map<string, TransformedAnime[]>>(new Map());
   expandedDays = signal<Set<string>>(new Set());
   allExpanded = signal(false);
+  showModal = signal(false);
+  selectedAnime = signal<TransformedAnime | null>(null);
   Array = Array; // Exponer Array para usar en el template
   parseFloat = parseFloat; // Exponer parseFloat para usar en el template
   
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private animesService: AnimesService
   ) {}
 
-  navigateToAnime(animeId: string) {
-    this.router.navigate(['/anime', animeId]);
+  openModal(anime: TransformedAnime, event: Event) {
+    event.stopPropagation();
+    this.selectedAnime.set(anime);
+    this.showModal.set(true);
+  }
+
+  closeModal() {
+    this.showModal.set(false);
+    this.selectedAnime.set(null);
+  }
+
+  async navigateToAnime(anime: TransformedAnime, event?: Event) {
+    // Prevenir la navegación si el anime no está disponible
+    if (!anime.isAvailable) {
+      if (event) {
+        event.stopPropagation();
+      }
+      return;
+    }
+
+    try {
+      // Si ya tenemos el slug, navegar directamente
+      if (anime.slug) {
+        this.router.navigate(['/anime', anime.slug]);
+      }
+    } catch (error) {
+      console.error('Error navegando al anime:', error);
+    }
   }
 
   toggleDay(date: string) {
@@ -175,6 +207,19 @@ export class CalendarComponent implements OnInit {
                 };
               }
 
+              // Verificar si el anime existe en nuestra base de datos
+              let isAvailable = false;
+              let slug = '';
+              try {
+                const searchResults: any = await this.animesService.searchAnimes(anime.name, 1);
+                if (searchResults && searchResults.data && searchResults.data.length > 0) {
+                  isAvailable = true;
+                  slug = searchResults.data[0].slug;
+                }
+              } catch (error) {
+                console.log(`Anime ${anime.name} no encontrado en la base de datos`);
+              }
+
               return {
                 _id: anime.id.toString(),
                 title: anime.name,
@@ -187,7 +232,9 @@ export class CalendarComponent implements OnInit {
                 release_date: nextEpisode?.air_date || anime.first_air_date,
                 first_air_date: anime.first_air_date,
                 overview: anime.overview,
-                next_episode: nextEpisode
+                next_episode: nextEpisode,
+                isAvailable: isAvailable,
+                slug: slug
               };
             } catch (error) {
               console.error(`Error fetching details for anime ${anime.id}:`, error);
@@ -202,7 +249,8 @@ export class CalendarComponent implements OnInit {
                 vote_count: '0',
                 release_date: anime.first_air_date,
                 first_air_date: anime.first_air_date,
-                overview: anime.overview
+                overview: anime.overview,
+                isAvailable: false
               };
             }
           })
