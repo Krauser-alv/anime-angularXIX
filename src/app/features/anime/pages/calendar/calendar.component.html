@@ -210,8 +210,8 @@
     @if (!loading() && animes().length === 0) {
       <div class="text-center py-20">
         <div class="text-6xl mb-4">📺</div>
-        <h3 class="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">No hay animes esta semana</h3>
-        <p class="text-gray-600 dark:text-gray-400">Vuelve pronto para ver los próximos estrenos</p>
+        <h3 class="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">¡Parece que los animes están tomando un descanso! 😴</h3>
+        <p class="text-gray-600 dark:text-gray-400">No hay estrenos programados para esta semana, pero vuelve pronto para descubrir nuevas aventuras.</p>
       </div>
     }
   </div>
@@ -282,7 +282,7 @@
           <div>
             <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">Sinopsis</h3>
             <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-              {{ selectedAnime()!.overview || 'No hay sinopsis disponible.' }}
+              {{ selectedAnime()!.overview || '¡Este anime es tan épico que aún no encontramos las palabras para describirlo! 🌟 Pero no te preocupes, pronto estará disponible con toda su información.' }}
             </p>
           </div>
         </div>
