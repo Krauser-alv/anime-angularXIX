@@ -15,11 +15,15 @@ export class NavbarComponent implements OnInit {
   private progressBarService = inject(ProgressBarService);
   public isLoading = computed(() => this.progressBarService.isLoading());
   isDarkMode = false;
+  isMobileMenuOpen = false;
+  isLanguageMenuOpen = false;
+  selectedLanguage = 'es'; // Por defecto español
 
   ngOnInit(): void {
     // Initialize Flowbite
     initFlowbite();
     this.initializeTheme();
+    this.initializeLanguage();
   }
 
   initializeTheme(): void {
@@ -40,6 +44,13 @@ export class NavbarComponent implements OnInit {
     }
   }
 
+  initializeLanguage(): void {
+    const savedLanguage = localStorage.getItem('language');
+    if (savedLanguage) {
+      this.selectedLanguage = savedLanguage;
+    }
+  }
+
   toggleDarkMode(): void {
     this.isDarkMode = !this.isDarkMode;
     if (this.isDarkMode) {
@@ -49,5 +60,29 @@ export class NavbarComponent implements OnInit {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    // Cerrar el menú de idiomas si está abierto
+    if (this.isMobileMenuOpen) {
+      this.isLanguageMenuOpen = false;
+    }
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
+
+  toggleLanguageMenu(): void {
+    this.isLanguageMenuOpen = !this.isLanguageMenuOpen;
+  }
+
+  selectLanguage(lang: string): void {
+    this.selectedLanguage = lang;
+    localStorage.setItem('language', lang);
+    this.isLanguageMenuOpen = false;
+    // Aquí puedes agregar la lógica para cambiar el idioma de la aplicación
+    console.log('Idioma seleccionado:', lang);
   }
 }
