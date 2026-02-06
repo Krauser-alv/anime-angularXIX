@@ -1,9 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../../../../environments/environments';
-import { PosterCardComponent } from '../../../../shared/components/poster-card/poster-card.component';
 import { NeonLoaderComponent } from '../../../../shared/components/neon-loader/neon-loader.component';
+import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
 
 interface CalendarAnime {
   id: number;
@@ -12,6 +13,13 @@ interface CalendarAnime {
   vote_average: number;
   first_air_date: string;
   overview: string;
+}
+
+interface EpisodeInfo {
+  air_date: string;
+  episode_number: number;
+  season_number: number;
+  name: string;
 }
 
 interface TransformedAnime {
@@ -27,11 +35,12 @@ interface TransformedAnime {
   first_air_date: string;
   overview: string;
   runtime?: string;
+  next_episode?: EpisodeInfo;
 }
 
 @Component({
   selector: 'app-calendar',
-  imports: [CommonModule, PosterCardComponent, NeonLoaderComponent],
+  imports: [CommonModule, DatePipe, NeonLoaderComponent, StarRatingComponent],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
@@ -39,11 +48,76 @@ export class CalendarComponent implements OnInit {
   animes = signal<TransformedAnime[]>([]);
   loading = signal(true);
   weekRange = signal('');
+  animesByDate = signal<Map<string, TransformedAnime[]>>(new Map());
+  expandedDays = signal<Set<string>>(new Set());
+  allExpanded = signal(false);
+  Array = Array; // Exponer Array para usar en el template
+  parseFloat = parseFloat; // Exponer parseFloat para usar en el template
   
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
+
+  navigateToAnime(animeId: string) {
+    this.router.navigate(['/anime', animeId]);
+  }
+
+  toggleDay(date: string) {
+    const expanded = new Set(this.expandedDays());
+    if (expanded.has(date)) {
+      expanded.delete(date);
+    } else {
+      expanded.add(date);
+    }
+    this.expandedDays.set(expanded);
+    this.updateAllExpandedState();
+  }
+
+  isDayExpanded(date: string): boolean {
+    return this.expandedDays().has(date);
+  }
+
+  toggleAllDays() {
+    const dates = Array.from(this.animesByDate().keys());
+    if (this.allExpanded()) {
+      // Contraer todos
+      this.expandedDays.set(new Set());
+      this.allExpanded.set(false);
+    } else {
+      // Expandir todos
+      this.expandedDays.set(new Set(dates));
+      this.allExpanded.set(true);
+    }
+  }
+
+  private updateAllExpandedState() {
+    const totalDays = this.animesByDate().size;
+    const expandedCount = this.expandedDays().size;
+    this.allExpanded.set(totalDays > 0 && expandedCount === totalDays);
+  }
 
   ngOnInit() {
     this.loadWeeklyAnimes();
+  }
+
+  private groupAnimesByDate(animes: TransformedAnime[]) {
+    const grouped = new Map<string, TransformedAnime[]>();
+    
+    animes.forEach(anime => {
+      const date = anime.next_episode?.air_date || anime.first_air_date;
+      if (!grouped.has(date)) {
+        grouped.set(date, []);
+      }
+      grouped.get(date)!.push(anime);
+    });
+
+    // Ordenar por fecha
+    const sortedMap = new Map([...grouped.entries()].sort((a, b) => {
+      return new Date(a[0]).getTime() - new Date(b[0]).getTime();
+    }));
+
+    this.animesByDate.set(sortedMap);
   }
 
   private getWeekRange(): { start: string; end: string } {
@@ -80,22 +154,62 @@ export class CalendarComponent implements OnInit {
     const url = `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&language=es-MX&sort_by=popularity.desc&with_genres=16&air_date.gte=${start}&air_date.lte=${end}&with_origin_country=JP`;
 
     this.http.get<{ results: CalendarAnime[] }>(url).subscribe({
-      next: (response) => {
-        // Transformar los datos de TMDB al formato esperado por PosterCard
-        const transformedAnimes = response.results.map(anime => ({
-          _id: anime.id.toString(),
-          title: anime.name,
-          name: anime.name,
-          images: {
-            poster: anime.poster_path ? `https://image.tmdb.org/t/p/w500${anime.poster_path}` : ''
-          },
-          rating: anime.vote_average.toString(),
-          vote_count: '0',
-          release_date: anime.first_air_date,
-          first_air_date: anime.first_air_date,
-          overview: anime.overview
-        }));
-        this.animes.set(transformedAnimes);
+      next: async (response) => {
+        // Obtener información de episodios para cada anime
+        const animesWithEpisodes = await Promise.all(
+          response.results.map(async (anime) => {
+            try {
+              // Obtener detalles del anime incluyendo próximo episodio
+              const detailUrl = `https://api.themoviedb.org/3/tv/${anime.id}?api_key=${apiKey}&language=es-MX`;
+              const details: any = await this.http.get(detailUrl).toPromise();
+              
+              let nextEpisode: EpisodeInfo | undefined;
+              
+              // Si hay un próximo episodio programado
+              if (details.next_episode_to_air) {
+                nextEpisode = {
+                  air_date: details.next_episode_to_air.air_date,
+                  episode_number: details.next_episode_to_air.episode_number,
+                  season_number: details.next_episode_to_air.season_number,
+                  name: details.next_episode_to_air.name
+                };
+              }
+
+              return {
+                _id: anime.id.toString(),
+                title: anime.name,
+                name: anime.name,
+                images: {
+                  poster: anime.poster_path ? `https://image.tmdb.org/t/p/w500${anime.poster_path}` : ''
+                },
+                rating: anime.vote_average.toString(),
+                vote_count: '0',
+                release_date: nextEpisode?.air_date || anime.first_air_date,
+                first_air_date: anime.first_air_date,
+                overview: anime.overview,
+                next_episode: nextEpisode
+              };
+            } catch (error) {
+              console.error(`Error fetching details for anime ${anime.id}:`, error);
+              return {
+                _id: anime.id.toString(),
+                title: anime.name,
+                name: anime.name,
+                images: {
+                  poster: anime.poster_path ? `https://image.tmdb.org/t/p/w500${anime.poster_path}` : ''
+                },
+                rating: anime.vote_average.toString(),
+                vote_count: '0',
+                release_date: anime.first_air_date,
+                first_air_date: anime.first_air_date,
+                overview: anime.overview
+              };
+            }
+          })
+        );
+
+        this.animes.set(animesWithEpisodes);
+        this.groupAnimesByDate(animesWithEpisodes);
         this.loading.set(false);
       },
       error: (error) => {
