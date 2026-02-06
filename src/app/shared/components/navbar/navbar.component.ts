@@ -3,10 +3,11 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
 import { ProgressBarService } from '../../services/progress-bar.service';
+import { SearchInputComponent } from '../search-input/search-input.component';
 
 @Component({
   selector: 'app-navbar',
-  imports: [ProgressBarComponent, RouterLink, RouterLinkActive],
+  imports: [ProgressBarComponent, RouterLink, RouterLinkActive, SearchInputComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
