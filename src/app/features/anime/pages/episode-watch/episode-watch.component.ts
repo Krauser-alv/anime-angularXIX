@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AnimesService } from '../../../../core/services/animes.service';
@@ -15,7 +15,7 @@ import { environment } from '../../../../../environments/environments';
 @Component({
   selector: 'app-episode-watch',
   standalone: true,
-  imports: [CommonModule, DatePipe, NeonLoaderComponent, StarRatingComponent, TranslatePipe, LocalizedDatePipe],
+  imports: [CommonModule, NeonLoaderComponent, StarRatingComponent, TranslatePipe, LocalizedDatePipe],
   templateUrl: './episode-watch.component.html',
   styleUrls: ['./episode-watch.component.css']
 })

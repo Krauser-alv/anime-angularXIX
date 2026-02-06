@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, LOCALE_ID, Inject } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../../../environments/environments';
@@ -46,7 +46,7 @@ interface TransformedAnime {
 
 @Component({
   selector: 'app-calendar',
-  imports: [CommonModule, DatePipe, NeonLoaderComponent, StarRatingComponent, TranslatePipe, LocalizedDatePipe],
+  imports: [CommonModule, NeonLoaderComponent, StarRatingComponent, TranslatePipe, LocalizedDatePipe],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
