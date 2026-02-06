@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AnimesService } from '../../../core/services/animes.service';
 import { StarRatingComponent } from '../star-rating/star-rating.component';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-search-input',
   standalone: true,
-  imports: [CommonModule, FormsModule, StarRatingComponent],
+  imports: [CommonModule, FormsModule, StarRatingComponent, TranslatePipe],
   template: `
     <div class="relative w-full">
       <div class="relative">
@@ -19,7 +20,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
           [(ngModel)]="searchQuery"
           (input)="onSearchInput($event)"
           (focus)="showResults.set(true)"
-          placeholder="Buscar anime..."
+          [placeholder]="'search.placeholder' | translate"
           class="w-full px-4 py-2 pl-10 pr-4 text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <svg
@@ -83,7 +84,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
       @if (showResults() && searchQuery && searchResults().length === 0 && !isSearching()) {
         <div class="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4 text-center">
-          <p class="text-gray-600 dark:text-gray-400">No se encontraron resultados</p>
+          <p class="text-gray-600 dark:text-gray-400">{{ 'search.noResults' | translate }}</p>
         </div>
       }
     </div>

@@ -6,10 +6,11 @@ import { Episode } from '../../../../core/models/episode';
 import { AnimeCarouselComponent } from '../../../../shared/components/anime-carousel/anime-carousel.component';
 import { EpisodeCarouselComponent } from '../../../../shared/components/episode-carousel/episode-carousel.component';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-home',
-  imports: [AnimeCarouselComponent, EpisodeCarouselComponent, CommonModule, RouterLink],
+  imports: [AnimeCarouselComponent, EpisodeCarouselComponent, CommonModule, RouterLink, TranslatePipe],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

@@ -64,7 +64,7 @@
                             (click)="toggleOverview()"
                             class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
                           >
-                            Mostrar menos
+                            {{ 'animeDetail.showLess' | translate }}
                           </button>
                         }
                       </p>
@@ -74,7 +74,7 @@
                           (click)="toggleOverview()"
                           class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
                         >
-                          Mostrar más
+                          {{ 'animeDetail.showMore' | translate }}
                         </button>
                       </p>
                     }
@@ -85,33 +85,33 @@
               <!-- Datos relevantes -->
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                 <div>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">Tipo</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.type' | translate }}</p>
                   <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.type }}</p>
                 </div>
                 @if (anime()!.runtime) {
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Duración</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.duration' | translate }}</p>
                     <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.runtime }}</p>
                   </div>
                 }
                 @if (anime()!.release_date) {
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Estreno</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.releaseDate' | translate }}</p>
                     <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.release_date }}</p>
                   </div>
                 }
                 <div>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">Episodios</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.episodes' | translate }}</p>
                   <p class="font-semibold text-gray-900 dark:text-white">{{ episodes().length }}</p>
                 </div>
                 @if (anime()!.last_update) {
                   <div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Última actualización</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.lastUpdate' | translate }}</p>
                     <p class="font-semibold text-gray-900 dark:text-white">{{ formatLastUpdate(anime()!.last_update) }}</p>
                   </div>
                 }
                 <div>
-                  <p class="text-sm text-gray-500 dark:text-gray-400">Calificación</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.rating' | translate }}</p>
                   <div class="flex items-center">
                     <app-star-rating
                       [rating]="currentRating"
@@ -128,7 +128,7 @@
 
         <!-- Sección de episodios -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Episodios</h2>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ 'animeDetail.episodes' | translate }}</h2>
 
           <!-- Selector de temporadas -->
           @if (availableSeasons.length > 1) {
@@ -142,7 +142,7 @@
                   [class.text-gray-700]="selectedSeason() !== season"
                   class="px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
                 >
-                  Temporada {{ season }}
+                  {{ 'animeDetail.season' | translate }} {{ season }}
                 </button>
               }
             </div>
@@ -158,18 +158,18 @@
             @if (getEpisodesBySeason(selectedSeason()).length > episodesPerPage) {
               <div class="flex items-center justify-between mb-4 text-sm text-gray-600 dark:text-gray-400">
                 <span>
-                  Mostrando {{ (currentPage() - 1) * episodesPerPage + 1 }} - 
+                  {{ 'animeDetail.showing' | translate }} {{ (currentPage() - 1) * episodesPerPage + 1 }} - 
                   {{ Math.min(currentPage() * episodesPerPage, getEpisodesBySeason(selectedSeason()).length) }} 
-                  de {{ getEpisodesBySeason(selectedSeason()).length }} episodios
+                  {{ 'animeDetail.of' | translate }} {{ getEpisodesBySeason(selectedSeason()).length }} {{ 'animeDetail.episodes' | translate | lowercase }}
                 </span>
-                <span>Página {{ currentPage() }} de {{ getTotalPages(selectedSeason()) }}</span>
+                <span>{{ 'common.page' | translate }} {{ currentPage() }} {{ 'animeDetail.of' | translate }} {{ getTotalPages(selectedSeason()) }}</span>
               </div>
             }
 
             <div class="space-y-4">
               @if (getEpisodesBySeason(selectedSeason()).length === 0) {
                 <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                  Esta temporada aún está en producción. ¡Pronto habrá episodios disponibles!
+                  {{ 'animeDetail.noEpisodes' | translate }}
                 </div>
               } @else {
                 @for (episode of getPaginatedEpisodes(selectedSeason()); track episode._id) {
@@ -231,7 +231,7 @@
                             />
                             <div class="relative w-9 h-5 bg-gray-400 rounded-full peer dark:bg-gray-600 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500 dark:peer-checked:bg-green-500"></div>
                             <span class="select-none ms-2 text-xs font-medium text-gray-600 dark:text-gray-400">
-                              {{ isEpisodeWatched(episode._id) ? 'Visto' : 'No visto' }}
+                              {{ isEpisodeWatched(episode._id) ? ('animeDetail.watched' | translate) : ('animeDetail.notWatched' | translate) }}
                             </span>
                           </label>
                         </div>
@@ -247,7 +247,7 @@
                                   (click)="toggleEpisodeOverview(episode._id); $event.stopPropagation()"
                                   class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
                                 >
-                                  Mostrar menos
+                                  {{ 'animeDetail.showLess' | translate }}
                                 </button>
                               }
                             </p>
@@ -257,7 +257,7 @@
                                 (click)="toggleEpisodeOverview(episode._id); $event.stopPropagation()"
                                 class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
                               >
-                                Mostrar más
+                                {{ 'animeDetail.showMore' | translate }}
                               </button>
                             </p>
                           }
@@ -268,7 +268,7 @@
                 </div>
               } @empty {
                 <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                  Has llegado al final de esta página. ¡Navega a otra para seguir explorando!
+                  {{ 'animeDetail.noMoreEpisodes' | translate }}
                 </div>
               }
               }
@@ -329,7 +329,7 @@
             class="w-full flex items-center justify-between text-left focus:outline-none lg:cursor-default lg:pointer-events-none mb-4"
           >
             <div class="flex items-center gap-2">
-              <h3 class="text-xl font-bold text-gray-900 dark:text-white">Imágenes</h3>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ 'animeDetail.gallery' | translate }}</h3>
               @if (galleryImages.length > 0) {
                 <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-full text-sm font-medium">
                   {{ galleryImages.length }}
@@ -370,22 +370,22 @@
                   }
                 </div>
               } @else {
-                <p class="text-gray-500 dark:text-gray-400 text-sm">🖼️ La galería de imágenes está en preparación. ¡Pronto podrás disfrutar de increíbles visuales!</p>
+                <p class="text-gray-500 dark:text-gray-400 text-sm">{{ 'animeDetail.noGallery' | translate }}</p>
               }
 
               <!-- Información adicional -->
               <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Información adicional</h4>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-3">{{ 'animeDetail.additionalInfo' | translate }}</h4>
                 <div class="space-y-2 text-sm">
                   @if (anime()!.tagline) {
                     <div>
-                      <p class="text-gray-500 dark:text-gray-400">Tagline</p>
+                      <p class="text-gray-500 dark:text-gray-400">{{ 'animeDetail.tagline' | translate }}</p>
                       <p class="text-gray-900 dark:text-white">{{ anime()!.tagline }}</p>
                     </div>
                   }
                   @if (anime()!.quality && anime()!.quality.length > 0) {
                     <div>
-                      <p class="text-gray-500 dark:text-gray-400">Calidad</p>
+                      <p class="text-gray-500 dark:text-gray-400">{{ 'animeDetail.quality' | translate }}</p>
                       <div class="flex flex-wrap gap-1 mt-1">
                         @for (q of anime()!.quality; track q) {
                           <span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">
@@ -405,7 +405,7 @@
   </div>
 } @else {
   <div class="flex flex-col items-center justify-center bg-gray-100 dark:bg-background px-4" style="min-height: calc(100vh - 144px);">
-    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">🔍 ¡Ups! Este anime se escondió</h2>
-    <p class="text-gray-600 dark:text-gray-400">Parece que este anime está jugando al escondite o ya no está disponible. ¡Explora otros increíbles animes!</p>
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ 'animeDetail.notFound' | translate }}</h2>
+    <p class="text-gray-600 dark:text-gray-400">{{ 'animeDetail.notFoundMsg' | translate }}</p>
   </div>
 }

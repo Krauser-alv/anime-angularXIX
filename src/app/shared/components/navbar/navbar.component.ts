@@ -4,15 +4,18 @@ import { initFlowbite } from 'flowbite';
 import { ProgressBarComponent } from '../progress-bar/progress-bar.component';
 import { ProgressBarService } from '../../services/progress-bar.service';
 import { SearchInputComponent } from '../search-input/search-input.component';
+import { TranslationService } from '../../../core/services/translation.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-navbar',
-  imports: [ProgressBarComponent, RouterLink, RouterLinkActive, SearchInputComponent],
+  imports: [ProgressBarComponent, RouterLink, RouterLinkActive, SearchInputComponent, TranslatePipe],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent implements OnInit {
   private progressBarService = inject(ProgressBarService);
+  private translationService = inject(TranslationService);
   public isLoading = computed(() => this.progressBarService.isLoading());
   isDarkMode = false;
   isMobileMenuOpen = false;
@@ -80,9 +83,7 @@ export class NavbarComponent implements OnInit {
 
   selectLanguage(lang: string): void {
     this.selectedLanguage = lang;
-    localStorage.setItem('language', lang);
+    this.translationService.setLanguage(lang);
     this.isLanguageMenuOpen = false;
-    // Aquí puedes agregar la lógica para cambiar el idioma de la aplicación
-    console.log('Idioma seleccionado:', lang);
   }
 }

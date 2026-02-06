@@ -3,7 +3,7 @@
   <div class="pt-20 pb-6 px-6">
     <div class="container max-w-[1400px] mx-auto">
       <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600">
-        Directorio de Animes
+        {{ 'directory.title' | translate }}
       </h1>
     </div>
   </div>
@@ -37,7 +37,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
-            Limpiar todos los filtros
+            {{ 'directory.clearFilters' | translate }}
           </button>
         </div>
       }
@@ -161,17 +161,17 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
         </svg>
         <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          ¡No encontramos coincidencias!
+          {{ 'directory.noResults' | translate }}
         </h3>
         <p class="text-gray-600 dark:text-gray-400 mb-4">
-          Parece que estos animes son ninjas expertos. Intenta ajustar los filtros para encontrarlos.
+          {{ 'directory.noResultsMsg' | translate }}
         </p>
         @if (hasActiveFilters) {
           <button
             (click)="clearFilters()"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Limpiar filtros
+            {{ 'directory.clearFilters' | translate }}
           </button>
         }
       </div>

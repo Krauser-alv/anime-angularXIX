@@ -7,9 +7,12 @@ import { register } from 'swiper/element';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import { registerLocaleData } from '@angular/common';
 import localeEsMx from '@angular/common/locales/es-MX';
+import localeEn from '@angular/common/locales/en';
 import { progressBarInterceptor } from './shared/interceptors/progress-bar.interceptor';
 
-registerLocaleData(localeEsMx);
+// Registrar ambos locales
+registerLocaleData(localeEsMx, 'es-MX');
+registerLocaleData(localeEn, 'en-US');
 
 // Registrar Swiper con los módulos necesarios
 register();

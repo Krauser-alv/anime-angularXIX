@@ -3,10 +3,10 @@
     <!-- Header -->
     <div class="text-center mb-12">
       <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600 mb-4">
-        Calendario Semanal
+        {{ 'calendar.title' | translate }}
       </h1>
       <p class="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-lg mb-2">
-        Animes que se emiten esta semana
+        {{ 'calendar.subtitle' | translate }}
       </p>
       <div class="flex justify-center items-center relative">
         <span class="text-purple-700 dark:text-purple-400 font-bold text-lg sm:text-xl md:text-2xl bg-purple-100 dark:bg-purple-900/30 px-6 py-2 rounded-lg border-2 border-purple-300 dark:border-purple-500/50">
@@ -22,14 +22,14 @@
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
               </svg>
-              <span class="hidden sm:inline">Contraer todos</span>
-              <span class="sm:hidden">Contraer</span>
+              <span class="hidden sm:inline">{{ 'calendar.collapseAll' | translate }}</span>
+              <span class="sm:hidden">{{ 'calendar.collapse' | translate }}</span>
             } @else {
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
               </svg>
-              <span class="hidden sm:inline">Expandir todos</span>
-              <span class="sm:hidden">Expandir</span>
+              <span class="hidden sm:inline">{{ 'calendar.expandAll' | translate }}</span>
+              <span class="sm:hidden">{{ 'calendar.expand' | translate }}</span>
             }
           </button>
         }
@@ -55,10 +55,10 @@
             >
               <div class="flex items-center gap-3">
                 <div class="bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600 text-white px-4 py-2 rounded-lg font-bold text-base">
-                  {{ entry[0] | date:'EEEE, dd MMMM' }}
+                  {{ entry[0] | localizedDate:'EEEE, dd MMMM' }}
                 </div>
                 <span class="text-gray-600 dark:text-gray-400 text-sm font-semibold">
-                  {{ entry[1].length }} {{ entry[1].length === 1 ? 'anime' : 'animes' }}
+                  {{ entry[1].length }} {{ entry[1].length === 1 ? ('calendar.anime' | translate) : ('calendar.animes' | translate) }}
                 </span>
               </div>
               <svg 
@@ -103,7 +103,7 @@
                               <!-- Badge "Próximamente" -->
                               @if (!anime.isAvailable) {
                                 <div class="absolute top-1 left-1 bg-orange-500 text-white px-2 py-1 rounded-full text-[9px] font-bold shadow-lg">
-                                  Próximamente
+                                  {{ 'calendar.comingSoon' | translate }}
                                 </div>
                               }
                             </div>
@@ -127,7 +127,7 @@
                                   (click)="openModal(anime, $event)"
                                   class="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-[9px] font-bold py-1 px-2 rounded transition-all duration-300"
                                 >
-                                  Ver sinopsis
+                                  {{ 'calendar.viewSynopsis' | translate }}
                                 </button>
                               }
                             </div>
@@ -165,7 +165,7 @@
                                 <!-- Información del episodio -->
                                 @if (anime.next_episode) {
                                   <div class="bg-white/10 backdrop-blur-sm rounded-lg p-1.5">
-                                    <p class="text-white text-[9px] font-semibold mb-1 text-center">Próximo episodio</p>
+                                    <p class="text-white text-[9px] font-semibold mb-1 text-center">{{ 'modal.nextEpisode' | translate }}</p>
                                     <div class="text-center">
                                       <p class="text-white text-sm sm:text-base font-bold mb-0.5">
                                         T{{ anime.next_episode.season_number }} E{{ anime.next_episode.episode_number }}
@@ -179,7 +179,7 @@
                                         <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
-                                        <span>{{ anime.next_episode.air_date | date:'dd/MM/yyyy' }}</span>
+                                        <span>{{ anime.next_episode.air_date | localizedDate:'dd/MM/yyyy' }}</span>
                                       </div>
                                     </div>
                                   </div>
@@ -190,7 +190,7 @@
                               <button 
                                 class="w-full bg-white hover:bg-gray-100 text-purple-600 text-[9px] sm:text-[10px] font-bold py-1.5 px-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
                               >
-                                Ver anime
+                                {{ 'calendar.viewAnime' | translate }}
                               </button>
                             </div>
                           </div>
@@ -210,8 +210,8 @@
     @if (!loading() && animes().length === 0) {
       <div class="text-center py-20">
         <div class="text-6xl mb-4">📺</div>
-        <h3 class="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">¡Parece que los animes están tomando un descanso! 😴</h3>
-        <p class="text-gray-600 dark:text-gray-400">No hay estrenos programados para esta semana, pero vuelve pronto para descubrir nuevas aventuras.</p>
+        <h3 class="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">{{ 'calendar.emptyWeek' | translate }}</h3>
+        <p class="text-gray-600 dark:text-gray-400">{{ 'calendar.emptyWeekMsg' | translate }}</p>
       </div>
     }
   </div>
@@ -264,7 +264,7 @@
             
             <!-- Badge Próximamente -->
             <div class="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-              Próximamente
+              {{ 'modal.comingSoon' | translate }}
             </div>
 
             <!-- Fecha al final -->
@@ -273,16 +273,16 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
-                <span>{{ selectedAnime()!.next_episode!.air_date | date:'dd/MM/yyyy' }}</span>
+                <span>{{ selectedAnime()!.next_episode!.air_date | localizedDate:'dd/MM/yyyy' }}</span>
               </div>
             }
           </div>
 
           <!-- Sinopsis -->
           <div>
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">Sinopsis</h3>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-3">{{ 'modal.synopsis' | translate }}</h3>
             <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-              {{ selectedAnime()!.overview || '¡Este anime es tan épico que aún no encontramos las palabras para describirlo! 🌟 Pero no te preocupes, pronto estará disponible con toda su información.' }}
+              {{ selectedAnime()!.overview || ('modal.noSynopsis' | translate) }}
             </p>
           </div>
         </div>

@@ -10,25 +10,25 @@
     <div class="container max-w-5xl mx-auto text-center relative z-10">
       <div class="mb-6">
         <span class="inline-block px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-sm font-semibold border-2 border-purple-300 dark:border-purple-500/50">
-          ✨ Tu plataforma de anime favorita
+          ✨ {{ 'home.tagline' | translate }}
         </span>
       </div>
       
       <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6">
         <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600">
-          Bienvenido
+          {{ 'home.welcome' | translate }}
         </span>
       </h1>
       
       <p class="text-lg sm:text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-        Descubre, explora y disfruta de los mejores animes en un solo lugar
+        {{ 'home.subtitle' | translate }}
       </p>
 
       <!-- Quick actions -->
       <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <a routerLink="/directory" 
            class="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
-          <span>Explorar Directorio</span>
+          <span>{{ 'home.exploreDirectory' | translate }}</span>
           <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
           </svg>
@@ -39,20 +39,20 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
           </svg>
-          <span>Ver Calendario</span>
+          <span>{{ 'home.viewCalendar' | translate }}</span>
         </a>
       </div>
     </div>
   </section>
 
   <app-episode-carousel 
-      title="Streaming episodes" 
+      [title]="'home.latestEpisodes' | translate" 
       [icon]="droppedIcon" 
       [episodeList]="episodeList()"
       [anime]="null"
       [isLoading]="isLoadingDropped()" 
-      emptyStateTitle="¡Los episodios están en camino! 🚀"
-      emptyStateMessage="Parece que aún no hay nuevos episodios disponibles. ¡Mantente atento, pronto habrá más acción!" 
+      [emptyStateTitle]="'home.emptyEpisodes' | translate"
+      [emptyStateMessage]="'home.emptyEpisodesMsg' | translate" 
       emptyStateIcon="search"
       sliderId="episodes" 
       [limit]="SLIDER_LIMIT">
@@ -60,12 +60,12 @@
 
   <!-- Carrusel de recomendaciones -->
   <app-anime-carousel
-      title="Anime recommendation"
+      [title]="'home.recommendations' | translate"
       [icon]="recommendationIcon"
       [animeList]="animeList()"
       [isLoading]="isLoadingRecommendations()"
-      emptyStateTitle="¡Estamos preparando algo especial! ✨"
-      emptyStateMessage="Nuestro equipo está seleccionando las mejores recomendaciones para ti. Vuelve pronto para descubrirlas."
+      [emptyStateTitle]="'home.emptyRecommendations' | translate"
+      [emptyStateMessage]="'home.emptyRecommendationsMsg' | translate"
       emptyStateIcon="anime"
       sliderId="recommendations"
       [limit]="SLIDER_LIMIT">
@@ -73,12 +73,12 @@
 
   <!-- Carrusel de tops -->
   <app-anime-carousel
-      title="Top anime today"
+      [title]="'home.topAnimes' | translate"
       [icon]="topIcon"
       [animeList]="topAnimeList()"
       [isLoading]="isLoadingTops()"
-      emptyStateTitle="¡El ranking está en construcción! 🏆"
-      emptyStateMessage="Los mejores animes están compitiendo por el primer lugar. Regresa pronto para ver quién domina el top."
+      [emptyStateTitle]="'home.emptyTops' | translate"
+      [emptyStateMessage]="'home.emptyTopsMsg' | translate"
       emptyStateIcon="top"
       sliderId="tops"
       [limit]="SLIDER_LIMIT">

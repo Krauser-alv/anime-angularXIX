@@ -7,6 +7,7 @@ import { SearchInputComponent } from '../../../../shared/components/search-input
 import { PosterCardComponent } from '../../../../shared/components/poster-card/poster-card.component';
 import { NeonLoaderComponent } from '../../../../shared/components/neon-loader/neon-loader.component';
 import { OrderFilterComponent } from '../../../../shared/components/order-filter/order-filter.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-directory',
@@ -18,7 +19,8 @@ import { OrderFilterComponent } from '../../../../shared/components/order-filter
     OrderFilterComponent,
     SearchInputComponent,
     PosterCardComponent,
-    NeonLoaderComponent
+    NeonLoaderComponent,
+    TranslatePipe
   ],
   templateUrl: './directory.component.html',
   styleUrls: ['./directory.component.css']

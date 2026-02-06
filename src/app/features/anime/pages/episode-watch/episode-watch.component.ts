@@ -8,12 +8,14 @@ import { Episode } from '../../../../core/models/episode';
 import { PlayerResponse, PlayerEmbed } from '../../../../core/models/player';
 import { NeonLoaderComponent } from '../../../../shared/components/neon-loader/neon-loader.component';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { LocalizedDatePipe } from '../../../../shared/pipes/localized-date.pipe';
 import { environment } from '../../../../../environments/environments';
 
 @Component({
   selector: 'app-episode-watch',
   standalone: true,
-  imports: [CommonModule, DatePipe, NeonLoaderComponent, StarRatingComponent],
+  imports: [CommonModule, DatePipe, NeonLoaderComponent, StarRatingComponent, TranslatePipe, LocalizedDatePipe],
   templateUrl: './episode-watch.component.html',
   styleUrls: ['./episode-watch.component.css']
 })

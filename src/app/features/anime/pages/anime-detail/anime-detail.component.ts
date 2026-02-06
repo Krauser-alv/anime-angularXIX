@@ -7,11 +7,12 @@ import { Episode } from '../../../../core/models/episode';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
 import { NeonLoaderComponent } from '../../../../shared/components/neon-loader/neon-loader.component';
 import { environment } from '../../../../../environments/environments';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-anime-detail',
   standalone: true,
-  imports: [CommonModule, StarRatingComponent, NeonLoaderComponent],
+  imports: [CommonModule, StarRatingComponent, NeonLoaderComponent, TranslatePipe],
   templateUrl: './anime-detail.component.html',
   styleUrls: ['./anime-detail.component.css']
 })

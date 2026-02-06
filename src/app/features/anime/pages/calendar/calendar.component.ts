@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, LOCALE_ID, Inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -6,6 +6,9 @@ import { environment } from '../../../../../environments/environments';
 import { NeonLoaderComponent } from '../../../../shared/components/neon-loader/neon-loader.component';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
 import { AnimesService } from '../../../../core/services/animes.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { TranslationService } from '../../../../core/services/translation.service';
+import { LocalizedDatePipe } from '../../../../shared/pipes/localized-date.pipe';
 
 interface CalendarAnime {
   id: number;
@@ -43,7 +46,7 @@ interface TransformedAnime {
 
 @Component({
   selector: 'app-calendar',
-  imports: [CommonModule, DatePipe, NeonLoaderComponent, StarRatingComponent],
+  imports: [CommonModule, DatePipe, NeonLoaderComponent, StarRatingComponent, TranslatePipe, LocalizedDatePipe],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
@@ -62,7 +65,8 @@ export class CalendarComponent implements OnInit {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private animesService: AnimesService
+    private animesService: AnimesService,
+    private translationService: TranslationService
   ) {}
 
   openModal(anime: TransformedAnime, event: Event) {
@@ -174,7 +178,10 @@ export class CalendarComponent implements OnInit {
   }
 
   private formatDisplayDate(date: Date): string {
-    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    const currentLang = this.translationService.getCurrentLanguage();
+    const months = currentLang === 'es' 
+      ? ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+      : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return `${date.getDate()} ${months[date.getMonth()]}`;
   }
 
