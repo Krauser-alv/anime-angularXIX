@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.tu-dominio.com',
+  apiUrl: 'https://animehack.net/',
+  tmdbImageBaseUrl: 'https://image.tmdb.org/t/p/w500',
 };
