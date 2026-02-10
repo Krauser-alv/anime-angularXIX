@@ -1,0 +1,411 @@
+@if (isLoading()) {
+  <div class="flex justify-center items-center h-screen">
+    <app-neon-loader></app-neon-loader>
+  </div>
+} @else if (anime()) {
+  <!-- Banner con imagen de fondo -->
+  <section class="relative h-[400px] w-full overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
+    <img 
+      [src]="imageApiUrl(anime()!.images.backdrop)" 
+      [alt]="anime()!.title"
+      class="w-full h-full object-cover"
+    />
+  </section>
+
+          <div class="container max-w-[1400px] mx-auto px-4 -mt-32 relative z-20">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <!-- Columna principal (3/4) -->
+      <div class="lg:col-span-3">
+        <!-- Información principal del anime -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+          <div class="flex flex-col md:flex-row gap-6">
+            <!-- Logo del anime -->
+            <div class="flex-shrink-0 flex justify-center md:justify-start">
+              <img 
+                [src]="imageApiUrl(anime()!.images.poster)" 
+                [alt]="anime()!.title"
+                class="w-56 h-80 md:w-48 md:h-72 object-cover rounded-lg shadow-md"
+              />
+            </div>
+
+            <!-- Información del lado derecho -->
+            <div class="flex-1">
+              <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                {{ anime()!.title }}
+              </h1>
+              
+              @if (anime()!.original_title) {
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+                  {{ anime()!.original_title }}
+                </p>
+              }
+
+              <!-- Categorías/Géneros -->
+              <!-- @if (anime()!.genres && anime()!.genres.length > 0) {
+                <div class="flex flex-wrap gap-2 mb-4">
+                  @for (genre of anime()!.genres; track genre) {
+                    <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
+                      Género {{ genre }}
+                    </span>
+                  }
+                </div>
+              } -->
+
+              <!-- Sinopsis -->
+              <div class="mb-4">
+                <!-- Sinopsis con funcionalidad expandible -->
+                @if (anime()!.overview) {
+                  <div class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    @if (anime()!.overview.length <= 150 || isOverviewExpanded()) {
+                      <p>{{ anime()!.overview }}
+                        @if (anime()!.overview.length > 150) {
+                          <button 
+                            (click)="toggleOverview()"
+                            class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
+                          >
+                            {{ 'animeDetail.showLess' | translate }}
+                          </button>
+                        }
+                      </p>
+                    } @else {
+                      <p>{{ anime()!.overview.substring(0, 150) }}...
+                        <button 
+                          (click)="toggleOverview()"
+                          class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
+                        >
+                          {{ 'animeDetail.showMore' | translate }}
+                        </button>
+                      </p>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Datos relevantes -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.type' | translate }}</p>
+                  <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.type }}</p>
+                </div>
+                @if (anime()!.runtime) {
+                  <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.duration' | translate }}</p>
+                    <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.runtime }}</p>
+                  </div>
+                }
+                @if (anime()!.release_date) {
+                  <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.releaseDate' | translate }}</p>
+                    <p class="font-semibold text-gray-900 dark:text-white">{{ anime()!.release_date }}</p>
+                  </div>
+                }
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.episodes' | translate }}</p>
+                  <p class="font-semibold text-gray-900 dark:text-white">{{ episodes().length }}</p>
+                </div>
+                @if (anime()!.last_update) {
+                  <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.lastUpdate' | translate }}</p>
+                    <p class="font-semibold text-gray-900 dark:text-white">{{ formatLastUpdate(anime()!.last_update) }}</p>
+                  </div>
+                }
+                <div>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ 'animeDetail.rating' | translate }}</p>
+                  <div class="flex items-center">
+                    <app-star-rating
+                      [rating]="currentRating"
+                      [totalVotes]="totalVotes"
+                      [interactive]="false"
+                      [size]="'large'"
+                    ></app-star-rating>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección de episodios -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ 'animeDetail.episodes' | translate }}</h2>
+
+          <!-- Selector de temporadas -->
+          @if (availableSeasons.length > 1) {
+            <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+              @for (season of availableSeasons; track season) {
+                <button
+                  (click)="selectSeason(season)"
+                  [class.bg-primary]="selectedSeason() === season"
+                  [class.text-white]="selectedSeason() === season"
+                  [class.bg-gray-200]="selectedSeason() !== season"
+                  [class.text-gray-700]="selectedSeason() !== season"
+                  class="px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+                >
+                  {{ 'animeDetail.season' | translate }} {{ season }}
+                </button>
+              }
+            </div>
+          }
+
+          <!-- Lista de episodios -->
+          @if (isLoadingEpisodes()) {
+            <div class="flex justify-center py-8">
+              <app-neon-loader></app-neon-loader>
+            </div>
+          } @else {
+            <!-- Información de paginación -->
+            @if (getEpisodesBySeason(selectedSeason()).length > episodesPerPage) {
+              <div class="flex items-center justify-between mb-4 text-sm text-gray-600 dark:text-gray-400">
+                <span>
+                  {{ 'animeDetail.showing' | translate }} {{ (currentPage() - 1) * episodesPerPage + 1 }} - 
+                  {{ Math.min(currentPage() * episodesPerPage, getEpisodesBySeason(selectedSeason()).length) }} 
+                  {{ 'animeDetail.of' | translate }} {{ getEpisodesBySeason(selectedSeason()).length }} {{ 'animeDetail.episodes' | translate | lowercase }}
+                </span>
+                <span>{{ 'common.page' | translate }} {{ currentPage() }} {{ 'animeDetail.of' | translate }} {{ getTotalPages(selectedSeason()) }}</span>
+              </div>
+            }
+
+            <div class="space-y-4">
+              @if (getEpisodesBySeason(selectedSeason()).length === 0) {
+                <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                  {{ 'animeDetail.noEpisodes' | translate }}
+                </div>
+              } @else {
+                @for (episode of getPaginatedEpisodes(selectedSeason()); track episode._id) {
+                <div 
+                  (click)="navigateToEpisode(episode)"
+                  class="bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer"
+                >
+                  <!-- Layout responsive: vertical en móvil, horizontal en desktop -->
+                  <div class="flex flex-col md:flex-row">
+                    <!-- Imagen del episodio -->
+                    <div class="flex-shrink-0 w-full md:w-40">
+                      <img 
+                        [src]="episodeImageUrl(episode.still_path)" 
+                        [alt]="episode.title"
+                        class="w-full h-48 md:h-24 object-cover"
+                      />
+                    </div>
+
+                    <!-- Información del episodio -->
+                    <div class="flex-1 p-4">
+                      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-2">
+                        <div class="flex-1">
+                          <h3 class="font-semibold text-gray-900 dark:text-white mb-1"
+                              [class.line-through]="isEpisodeWatched(episode._id)"
+                              [class.text-gray-500]="isEpisodeWatched(episode._id)"
+                              [class.dark:text-gray-400]="isEpisodeWatched(episode._id)">
+                            {{ episode.episode_number }}. {{ episode.title }}
+                          </h3>
+                          <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                            @if (episode.runtime && episode.runtime !== '' && episode.runtime !== '0') {
+                              {{ episode.runtime }} min
+                            }
+                            @if (episode.episode_type && (episode.runtime && episode.runtime !== '' && episode.runtime !== '0')) {
+                              •
+                            }
+                            @if (episode.episode_type) {
+                              {{ episode.episode_type }}
+                            }
+                          </p>
+                        </div>
+                        
+                        <!-- Área de controles: Rating y Toggle -->
+                        <div class="flex flex-col items-end gap-2 flex-shrink-0 mt-2 sm:mt-0 sm:ml-4">
+                          @if (episode.vote_average && episode.vote_average !== '0' && parseFloat(episode.vote_average) > 0) {
+                            <app-star-rating
+                              [rating]="parseFloat(episode.vote_average)"
+                              [totalVotes]="parseInt(episode.vote_count || '0')"
+                              [size]="'small'"
+                            ></app-star-rating>
+                          }
+                          
+                          <!-- Toggle para marcar como visto -->
+                          <label class="inline-flex items-center cursor-pointer" (click)="$event.stopPropagation()">
+                            <input 
+                              type="checkbox"
+                              [checked]="isEpisodeWatched(episode._id)"
+                              (change)="toggleWatchedEpisode(episode._id); $event.stopPropagation()"
+                              class="sr-only peer"
+                            />
+                            <div class="relative w-9 h-5 bg-gray-400 rounded-full peer dark:bg-gray-600 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500 dark:peer-checked:bg-green-500"></div>
+                            <span class="select-none ms-2 text-xs font-medium text-gray-600 dark:text-gray-400">
+                              {{ isEpisodeWatched(episode._id) ? ('animeDetail.watched' | translate) : ('animeDetail.notWatched' | translate) }}
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+
+                      <!-- Sinopsis del episodio -->
+                      @if (episode.overview && episode.overview.trim()) {
+                        <div class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                          @if (episode.overview.length <= 150 || isEpisodeExpanded(episode._id)) {
+                            <p>{{ episode.overview }}
+                              @if (episode.overview.length > 150) {
+                                <button 
+                                  (click)="toggleEpisodeOverview(episode._id); $event.stopPropagation()"
+                                  class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
+                                >
+                                  {{ 'animeDetail.showLess' | translate }}
+                                </button>
+                              }
+                            </p>
+                          } @else {
+                            <p>{{ episode.overview.substring(0, 150) }}...
+                              <button 
+                                (click)="toggleEpisodeOverview(episode._id); $event.stopPropagation()"
+                                class="text-blue-500 hover:text-blue-400 text-sm font-medium ml-1"
+                              >
+                                {{ 'animeDetail.showMore' | translate }}
+                              </button>
+                            </p>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+              } @empty {
+                <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                  {{ 'animeDetail.noMoreEpisodes' | translate }}
+                </div>
+              }
+              }
+            </div>
+
+            <!-- Paginación -->
+            @if (getTotalPages(selectedSeason()) > 1) {
+              <div class="flex items-center justify-center gap-2 mt-6">
+                <!-- Botón anterior -->
+                <button
+                  (click)="goToPreviousPage()"
+                  [disabled]="currentPage() === 1"
+                  class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                  </svg>
+                </button>
+
+                <!-- Números de página -->
+                @for (pageNum of getPageNumbers(selectedSeason()); track pageNum) {
+                  <button
+                    (click)="goToPage(pageNum)"
+                    [class.bg-blue-600]="currentPage() === pageNum"
+                    [class.text-white]="currentPage() === pageNum"
+                    [class.bg-white]="currentPage() !== pageNum"
+                    [class.text-gray-500]="currentPage() !== pageNum"
+                    [class.dark:bg-gray-800]="currentPage() !== pageNum"
+                    [class.dark:text-gray-400]="currentPage() !== pageNum"
+                    class="px-3 py-2 text-sm font-medium border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    {{ pageNum }}
+                  </button>
+                }
+
+                <!-- Botón siguiente -->
+                <button
+                  (click)="goToNextPage()"
+                  [disabled]="currentPage() === getTotalPages(selectedSeason())"
+                  class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                  </svg>
+                </button>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Sidebar (1/4) -->
+      <div class="lg:col-span-1">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-hidden lg:flex lg:flex-col">
+          <!-- Header del acordeón -->
+          <button 
+            (click)="toggleGallery()"
+            class="w-full flex items-center justify-between text-left focus:outline-none lg:cursor-default lg:pointer-events-none mb-4"
+          >
+            <div class="flex items-center gap-2">
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ 'animeDetail.gallery' | translate }}</h3>
+              @if (galleryImages.length > 0) {
+                <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-full text-sm font-medium">
+                  {{ galleryImages.length }}
+                </span>
+              }
+            </div>
+            <!-- Icono solo visible en móvil -->
+            <svg 
+              class="w-5 h-5 text-gray-500 transition-transform duration-200 lg:hidden"
+              [class.rotate-180]="isGalleryExpanded()"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <!-- Contenido del acordeón con scroll independiente -->
+          <div 
+            class="overflow-hidden transition-all duration-300 ease-in-out lg:!max-h-none lg:!opacity-100 lg:flex-1 lg:overflow-y-auto lg:pr-2"
+            [class.max-h-0]="!isGalleryExpanded()"
+            [class.max-h-[2000px]]="isGalleryExpanded()"
+            [class.opacity-0]="!isGalleryExpanded()"
+            [class.opacity-100]="isGalleryExpanded()"
+          >
+            <div class="lg:space-y-4">
+              @if (galleryImages.length > 0) {
+                <div class="space-y-4">
+                  @for (imageUrl of galleryImages; track imageUrl) {
+                    <div class="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
+                      <img 
+                        [src]="imageUrl" 
+                        [alt]="anime()!.title"
+                        class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-gray-500 dark:text-gray-400 text-sm">{{ 'animeDetail.noGallery' | translate }}</p>
+              }
+
+              <!-- Información adicional -->
+              <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-3">{{ 'animeDetail.additionalInfo' | translate }}</h4>
+                <div class="space-y-2 text-sm">
+                  @if (anime()!.tagline) {
+                    <div>
+                      <p class="text-gray-500 dark:text-gray-400">{{ 'animeDetail.tagline' | translate }}</p>
+                      <p class="text-gray-900 dark:text-white">{{ anime()!.tagline }}</p>
+                    </div>
+                  }
+                  @if (anime()!.quality && anime()!.quality.length > 0) {
+                    <div>
+                      <p class="text-gray-500 dark:text-gray-400">{{ 'animeDetail.quality' | translate }}</p>
+                      <div class="flex flex-wrap gap-1 mt-1">
+                        @for (q of anime()!.quality; track q) {
+                          <span class="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-xs">
+                            {{ q }}p
+                          </span>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="flex flex-col items-center justify-center bg-gray-100 dark:bg-background px-4" style="min-height: calc(100vh - 144px);">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ 'animeDetail.notFound' | translate }}</h2>
+    <p class="text-gray-600 dark:text-gray-400">{{ 'animeDetail.notFoundMsg' | translate }}</p>
+  </div>
+}

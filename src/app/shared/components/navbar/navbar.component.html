@@ -1,0 +1,158 @@
+<nav class="sticky top-0 z-40 bg-white border-gray-200 dark:bg-gray-900">
+    <app-progress-bar></app-progress-bar>
+    <div class="max-w-screen-xl mx-auto p-4">
+        <!-- Layout principal: Logo | Navegación | Acciones -->
+        <div class="flex items-center justify-between">
+            <!-- Logo (izquierda) -->
+            <a href="/" class="flex items-center space-x-3">
+                <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Anime Logo" />
+                <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white hidden sm:block">Anime</span>
+            </a>
+
+            <!-- Navegación centrada (desktop) -->
+            <div class="hidden md:flex items-center justify-center flex-1 mx-8">
+                <ul class="flex space-x-8 font-medium">
+                    <li>
+                        <a routerLink="/" 
+                            routerLinkActive="text-blue-700 dark:text-blue-500"
+                            [routerLinkActiveOptions]="{exact: true}"
+                            class="block py-2 px-3 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors"
+                            aria-current="page">{{ 'nav.home' | translate }}</a>
+                    </li>
+                    <li>
+                        <a routerLink="/directory"
+                            routerLinkActive="text-blue-700 dark:text-blue-500"
+                            class="block py-2 px-3 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.directory' | translate }}</a>
+                    </li>
+                    <li>
+                        <a routerLink="/calendar"
+                            routerLinkActive="text-blue-700 dark:text-blue-500"
+                            class="block py-2 px-3 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.calendar' | translate }}</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Acciones (derecha) -->
+            <div class="flex items-center space-x-2">
+                <!-- Search component (desktop only) -->
+                <div class="hidden lg:block w-64">
+                    <app-search-input></app-search-input>
+                </div>
+                
+                <!-- Dark mode toggle -->
+                <button type="button" (click)="toggleDarkMode()"
+                    class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 inline-flex items-center justify-center">
+                    <svg class="w-5 h-5" [class.hidden]="isDarkMode" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+                    </svg>
+                    <svg class="w-5 h-5" [class.hidden]="!isDarkMode" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z">
+                        </path>
+                    </svg>
+                    <span class="sr-only">Toggle dark mode</span>
+                </button>
+
+                <!-- Language dropdown -->
+                <div class="relative">
+                    <button type="button" (click)="toggleLanguageMenu()"
+                        class="inline-flex items-center font-medium justify-center px-3 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+                        @if (selectedLanguage === 'es') {
+                            <svg class="w-5 h-5 rounded-full me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="#c60b1e" d="M0 0h512v512H0z"/>
+                                <path fill="#ffc400" d="M0 128h512v256H0z"/>
+                            </svg>
+                            <span class="hidden sm:inline">Español</span>
+                            <span class="sm:hidden">ES</span>
+                        } @else {
+                            <svg class="w-5 h-5 rounded-full me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                <path fill="#b22234" d="M0 0h512v512H0z"/>
+                                <path d="M0 58h512M0 116h512M0 175h512M0 233h512M0 291h512M0 350h512M0 408h512" stroke="#fff" stroke-width="58"/>
+                                <path fill="#3c3b6e" d="M0 0h205v291H0z"/>
+                            </svg>
+                            <span class="hidden sm:inline">English (US)</span>
+                            <span class="sm:hidden">EN</span>
+                        }
+                    </button>
+                    
+                    <!-- Dropdown menu -->
+                    <div [class.hidden]="!isLanguageMenuOpen" 
+                         class="absolute right-0 mt-2 w-44 bg-white divide-y divide-gray-100 rounded-lg shadow-lg dark:bg-gray-700 z-50">
+                        <ul class="py-2 text-sm">
+                            <li>
+                                <button (click)="selectLanguage('en')"
+                                    class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex items-center"
+                                    [class.bg-gray-100]="selectedLanguage === 'en'"
+                                    [class.dark:bg-gray-600]="selectedLanguage === 'en'">
+                                    <svg class="w-5 h-5 rounded-full me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        <path fill="#b22234" d="M0 0h512v512H0z"/>
+                                        <path d="M0 58h512M0 116h512M0 175h512M0 233h512M0 291h512M0 350h512M0 408h512" stroke="#fff" stroke-width="58"/>
+                                        <path fill="#3c3b6e" d="M0 0h205v291H0z"/>
+                                    </svg>
+                                    <span class="text-gray-700 dark:text-gray-200">English (US)</span>
+                                </button>
+                            </li>
+                            <li>
+                                <button (click)="selectLanguage('es')"
+                                    class="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white flex items-center"
+                                    [class.bg-gray-100]="selectedLanguage === 'es'"
+                                    [class.dark:bg-gray-600]="selectedLanguage === 'es'">
+                                    <svg class="w-5 h-5 rounded-full me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                        <path fill="#c60b1e" d="M0 0h512v512H0z"/>
+                                        <path fill="#ffc400" d="M0 128h512v256H0z"/>
+                                    </svg>
+                                    <span class="text-gray-700 dark:text-gray-200">Español</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <button (click)="toggleMobileMenu()" type="button"
+                    class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                    <span class="sr-only">Open main menu</span>
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 17 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M1 1h15M1 7h15M1 13h15" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div [class.hidden]="!isMobileMenuOpen" class="md:hidden mt-4">
+            <!-- Search en mobile -->
+            <div class="mb-4 lg:hidden">
+                <app-search-input></app-search-input>
+            </div>
+            
+            <!-- Navegación mobile -->
+            <ul class="flex flex-col space-y-2 font-medium">
+                <li>
+                    <a routerLink="/" 
+                        (click)="closeMobileMenu()"
+                        routerLinkActive="bg-blue-700 text-white"
+                        [routerLinkActiveOptions]="{exact: true}"
+                        class="block py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors"
+                        aria-current="page">{{ 'nav.home' | translate }}</a>
+                </li>
+                <li>
+                    <a routerLink="/directory"
+                        (click)="closeMobileMenu()"
+                        routerLinkActive="bg-blue-700 text-white"
+                        class="block py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.directory' | translate }}</a>
+                </li>
+                <li>
+                    <a routerLink="/calendar"
+                        (click)="closeMobileMenu()"
+                        routerLinkActive="bg-blue-700 text-white"
+                        class="block py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.calendar' | translate }}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

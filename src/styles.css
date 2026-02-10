@@ -1,1 +1,59 @@
-/* You can add global styles to this file, and also import other style files */
+@import 'swiper/css';
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/css/scrollbar';
+@import 'swiper/css/effect-coverflow';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Variables globales */
+:root {
+    --primary-font: 'Roboto', 'Helvetica Neue', sans-serif;
+    --body-bg: #ffffff;
+    --text-color: #333333;
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos base */
+html {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+body {
+    margin: 0;
+    font-family: var(--primary-font);
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--text-color);
+    background-color: var(--body-bg);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Utilidades globales */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+}
+
+.pointer-events-none * {
+    pointer-events: none !important;
+}
