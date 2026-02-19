@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { EpisodeCardComponent } from '../episode-card/episode-card.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
+import { SkeletonEpisodeCardComponent } from '../skeleton-episode-card/skeleton-episode-card.component';
 import { SwiperDirective } from '../../directives/swiper.directive';
 import { SwiperOptions } from 'swiper/types';
 import { Episode } from '../../../core/models/episode';
@@ -10,7 +11,7 @@ import { Episode } from '../../../core/models/episode';
 @Component({
   selector: 'app-episode-carousel',
   standalone: true,
-  imports: [CommonModule, EpisodeCardComponent, EmptyStateComponent, SwiperDirective],
+  imports: [CommonModule, EpisodeCardComponent, EmptyStateComponent, SkeletonEpisodeCardComponent, SwiperDirective],
   templateUrl: './episode-carousel.component.html',
   styleUrls: ['./episode-carousel.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -29,6 +30,9 @@ export class EpisodeCarouselComponent implements OnInit, OnDestroy, OnChanges {
 
   // Signal interno para manejar la lista de episodios
   private episodeListSignal = signal<Episode[]>([]);
+  
+  // Array for skeleton placeholders
+  skeletonArray = Array.from({ length: this.limit }, (_, i) => i);
 
   constructor(private sanitizer: DomSanitizer) {}
 

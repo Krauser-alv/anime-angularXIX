@@ -10,12 +10,12 @@
 
   <div class="container max-w-[1400px] mx-auto px-6">
     <!-- Barra de búsqueda -->
-    <div class="mb-6">
+    <div class="mb-6" [class.pointer-events-none]="isLoading()" [class.opacity-50]="isLoading()">
       <app-search-input (searchChange)="onSearchChange($event)"></app-search-input>
     </div>
 
     <!-- Filtros -->
-    <div class="bg-white dark:bg-gray-900 rounded-lg p-6 mb-6">
+    <div class="bg-white dark:bg-gray-900 rounded-lg p-6 mb-6" [class.pointer-events-none]="isLoading()" [class.opacity-50]="isLoading()">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Ordenar por -->
         <app-order-filter (orderChange)="onOrderChange($event)"></app-order-filter>
@@ -32,7 +32,8 @@
         <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <button
             (click)="clearFilters()"
-            class="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
+            [disabled]="isLoading()"
+            class="text-sm text-red-600 dark:text-red-400 hover:underline flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -64,7 +65,7 @@
             <!-- Botón anterior -->
             <button
               (click)="goToPage(currentPage() - 1)"
-              [disabled]="currentPage() === 1"
+              [disabled]="currentPage() === 1 || isLoading()"
               class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,7 +80,8 @@
                 @if (currentPage() > 2) {
                   <button
                     (click)="goToPage(1)"
-                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                    [disabled]="isLoading()"
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     1
                   </button>
@@ -91,7 +93,8 @@
                 @if (currentPage() > 1) {
                   <button
                     (click)="goToPage(currentPage() - 1)"
-                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                    [disabled]="isLoading()"
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {{ currentPage() - 1 }}
                   </button>
@@ -106,7 +109,8 @@
                 @if (currentPage() < totalPages()) {
                   <button
                     (click)="goToPage(currentPage() + 1)"
-                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                    [disabled]="isLoading()"
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {{ currentPage() + 1 }}
                   </button>
@@ -118,7 +122,8 @@
                   }
                   <button
                     (click)="goToPage(totalPages())"
-                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                    [disabled]="isLoading()"
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {{ totalPages() }}
                   </button>
@@ -140,7 +145,7 @@
             <!-- Botón siguiente -->
             <button
               (click)="goToPage(currentPage() + 1)"
-              [disabled]="currentPage() === totalPages()"
+              [disabled]="currentPage() === totalPages() || isLoading()"
               class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,7 +174,8 @@
         @if (hasActiveFilters) {
           <button
             (click)="clearFilters()"
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            [disabled]="isLoading()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {{ 'directory.clearFilters' | translate }}
           </button>

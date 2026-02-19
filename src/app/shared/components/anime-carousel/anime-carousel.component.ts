@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { PosterCardComponent } from '../poster-card/poster-card.component';
 import { EmptyStateComponent } from '../empty-state/empty-state.component';
+import { SkeletonPosterCardComponent } from '../skeleton-poster-card/skeleton-poster-card.component';
 import { SwiperDirective } from '../../directives/swiper.directive';
 import { SwiperOptions } from 'swiper/types';
 import { AnimeSlider } from '../../../core/models/anime-slider';
@@ -10,7 +11,7 @@ import { AnimeSlider } from '../../../core/models/anime-slider';
 @Component({
   selector: 'app-anime-carousel',
   standalone: true,
-  imports: [CommonModule, PosterCardComponent, EmptyStateComponent, SwiperDirective],
+  imports: [CommonModule, PosterCardComponent, EmptyStateComponent, SkeletonPosterCardComponent, SwiperDirective],
   templateUrl: './anime-carousel.component.html',
   styleUrls: ['./anime-carousel.component.css'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -28,6 +29,9 @@ export class AnimeCarouselComponent implements OnInit, OnDestroy, OnChanges {
 
   // Signal interno para manejar la lista de animes
   private animeListSignal = signal<AnimeSlider[]>([]);
+
+  // Array for skeleton placeholders
+  skeletonArray = Array.from({ length: this.limit }, (_, i) => i);
 
   constructor(private sanitizer: DomSanitizer) {}
 

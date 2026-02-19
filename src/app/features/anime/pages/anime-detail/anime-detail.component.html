@@ -136,11 +136,12 @@
               @for (season of availableSeasons; track season) {
                 <button
                   (click)="selectSeason(season)"
+                  [disabled]="isLoadingEpisodes()"
                   [class.bg-primary]="selectedSeason() === season"
                   [class.text-white]="selectedSeason() === season"
                   [class.bg-gray-200]="selectedSeason() !== season"
                   [class.text-gray-700]="selectedSeason() !== season"
-                  class="px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+                  class="px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {{ 'animeDetail.season' | translate }} {{ season }}
                 </button>
@@ -175,6 +176,8 @@
                 @for (episode of getPaginatedEpisodes(selectedSeason()); track episode._id) {
                 <div 
                   (click)="navigateToEpisode(episode)"
+                  [class.pointer-events-none]="isLoadingEpisodes()"
+                  [class.opacity-50]="isLoadingEpisodes()"
                   class="bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer"
                 >
                   <!-- Layout responsive: vertical en móvil, horizontal en desktop -->
@@ -280,7 +283,7 @@
                 <!-- Botón anterior -->
                 <button
                   (click)="goToPreviousPage()"
-                  [disabled]="currentPage() === 1"
+                  [disabled]="currentPage() === 1 || isLoadingEpisodes()"
                   class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -292,13 +295,14 @@
                 @for (pageNum of getPageNumbers(selectedSeason()); track pageNum) {
                   <button
                     (click)="goToPage(pageNum)"
+                    [disabled]="isLoadingEpisodes()"
                     [class.bg-blue-600]="currentPage() === pageNum"
                     [class.text-white]="currentPage() === pageNum"
                     [class.bg-white]="currentPage() !== pageNum"
                     [class.text-gray-500]="currentPage() !== pageNum"
                     [class.dark:bg-gray-800]="currentPage() !== pageNum"
                     [class.dark:text-gray-400]="currentPage() !== pageNum"
-                    class="px-3 py-2 text-sm font-medium border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    class="px-3 py-2 text-sm font-medium border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {{ pageNum }}
                   </button>
@@ -307,7 +311,7 @@
                 <!-- Botón siguiente -->
                 <button
                   (click)="goToNextPage()"
-                  [disabled]="currentPage() === getTotalPages(selectedSeason())"
+                  [disabled]="currentPage() === getTotalPages(selectedSeason()) || isLoadingEpisodes()"
                   class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
