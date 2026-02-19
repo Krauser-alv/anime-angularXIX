@@ -1,5 +1,5 @@
 <div [class.pointer-events-none]="isLoading">
-    <section class="my-3 mx-10">
+    <section class="my-3 mx-10" [attr.aria-busy]="isLoading" aria-live="polite">
         <div class="flex justify-between items-center">
             <h2 class="text-2xl font-bold flex items-center dark:text-textSecondary">
                 <div class="w-[35px] h-[35px] mr-4 dark:textSecondary" [innerHTML]="safeIcon"></div>
@@ -8,7 +8,28 @@
         </div>
         
         <div [@fadeAnimation]>
-            @if (displayedAnimes().length > 0) {
+            @if (isLoading) {
+                <swiper-container 
+                    appSwiper 
+                    [config]="swiperConfig" 
+                    [attr.data-slider]="sliderId"
+                    pagination="true"
+                    pagination-clickable="true"
+                    pagination-dynamic-bullets="true"
+                    scrollbar="false"
+                    autoplay="true"
+                    autoplay-delay="3000"
+                    autoplay-disable-on-interaction="false">
+                    
+                    @for (item of skeletonArray; track $index) {
+                        <swiper-slide [@slideAnimation]>
+                            <div class="relative">
+                                <app-skeleton-poster-card></app-skeleton-poster-card>
+                            </div>
+                        </swiper-slide>
+                    }
+                </swiper-container>
+            } @else if (displayedAnimes().length > 0) {
                 <swiper-container 
                     appSwiper 
                     [config]="swiperConfig" 
