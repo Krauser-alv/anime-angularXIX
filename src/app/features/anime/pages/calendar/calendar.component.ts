@@ -47,7 +47,7 @@ interface TransformedAnime {
 
 @Component({
   selector: 'app-calendar',
-  imports: [CommonModule, NeonLoaderComponent, StarRatingComponent, SkeletonPosterCardComponent, TranslatePipe, LocalizedDatePipe],
+  imports: [CommonModule, StarRatingComponent, SkeletonPosterCardComponent, TranslatePipe, LocalizedDatePipe],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
