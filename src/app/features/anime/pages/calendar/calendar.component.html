@@ -39,8 +39,29 @@
 
     <!-- Loading State -->
     @if (loading()) {
-      <div class="flex justify-center items-center py-20">
-        <app-neon-loader />
+      <div class="space-y-4">
+        @for (day of [1, 2, 3, 4, 5, 6, 7]; track day) {
+          <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-md">
+            <!-- Skeleton header -->
+            <div class="p-4">
+              <div class="flex items-center gap-3">
+                <div class="h-10 w-48 bg-gray-300 dark:bg-gray-600 rounded-lg animate-pulse"></div>
+                <div class="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+              </div>
+            </div>
+            
+            <!-- Skeleton grid -->
+            <div class="p-4 pt-0">
+              <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                @for (item of [1, 2, 3, 4, 5, 6, 7, 8]; track item) {
+                  <div class="h-[320px] sm:h-[340px]">
+                    <app-skeleton-poster-card></app-skeleton-poster-card>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
       </div>
     }
 

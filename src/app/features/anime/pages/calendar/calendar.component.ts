@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../../../../environments/environments';
 import { NeonLoaderComponent } from '../../../../shared/components/neon-loader/neon-loader.component';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
+import { SkeletonPosterCardComponent } from '../../../../shared/components/skeleton-poster-card/skeleton-poster-card.component';
 import { AnimesService } from '../../../../core/services/animes.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { TranslationService } from '../../../../core/services/translation.service';
@@ -46,7 +47,7 @@ interface TransformedAnime {
 
 @Component({
   selector: 'app-calendar',
-  imports: [CommonModule, NeonLoaderComponent, StarRatingComponent, TranslatePipe, LocalizedDatePipe],
+  imports: [CommonModule, NeonLoaderComponent, StarRatingComponent, SkeletonPosterCardComponent, TranslatePipe, LocalizedDatePipe],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
