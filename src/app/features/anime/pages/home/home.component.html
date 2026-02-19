@@ -27,6 +27,8 @@
       <!-- Quick actions -->
       <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
         <a routerLink="/directory" 
+           [class.pointer-events-none]="isLoadingDropped() || isLoadingRecommendations() || isLoadingTops()"
+           [class.opacity-50]="isLoadingDropped() || isLoadingRecommendations() || isLoadingTops()"
            class="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2">
           <span>{{ 'home.exploreDirectory' | translate }}</span>
           <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,6 +37,8 @@
         </a>
         
         <a routerLink="/calendar" 
+           [class.pointer-events-none]="isLoadingDropped() || isLoadingRecommendations() || isLoadingTops()"
+           [class.opacity-50]="isLoadingDropped() || isLoadingRecommendations() || isLoadingTops()"
            class="px-8 py-4 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 rounded-xl font-semibold border-2 border-purple-300 dark:border-purple-500/50 hover:bg-purple-50 dark:hover:bg-gray-700 transition-all duration-300 flex items-center gap-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>

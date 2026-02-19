@@ -9,7 +9,8 @@
       <div class="container max-w-[1400px] mx-auto">
         <button 
           (click)="goBackToAnime()"
-          class="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors text-sm"
+          [disabled]="isLoading()"
+          class="mb-4 flex items-center gap-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -128,7 +129,8 @@
             <select 
               (change)="selectServer(+$any($event.target).value)"
               [value]="selectedServer()"
-              class="px-6 py-3 bg-blue-600 text-white font-medium border-none focus:outline-none focus:bg-blue-700 cursor-pointer min-w-[200px]"
+              [disabled]="isLoading()"
+              class="px-6 py-3 bg-blue-600 text-white font-medium border-none focus:outline-none focus:bg-blue-700 cursor-pointer min-w-[200px] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               @for (server of servers(); track $index) {
                 <option [value]="$index" class="bg-gray-800 text-white">
@@ -168,7 +170,7 @@
             <!-- Botón anterior -->
             <button
               (click)="goToPreviousEpisode(); $event.stopPropagation()"
-              [disabled]="!canGoToPrevious()"
+              [disabled]="!canGoToPrevious() || isLoading()"
               class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
               type="button"
             >
@@ -181,7 +183,7 @@
             <!-- Botón ir al anime -->
             <button
               (click)="goToAnimeDetail(); $event.stopPropagation()"
-              [disabled]="!canGoToAnime()"
+              [disabled]="!canGoToAnime() || isLoading()"
               class="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-500 disabled:cursor-not-allowed transition-colors"
               type="button"
             >
@@ -194,7 +196,7 @@
             <!-- Botón siguiente -->
             <button
               (click)="goToNextEpisode(); $event.stopPropagation()"
-              [disabled]="!canGoToNext()"
+              [disabled]="!canGoToNext() || isLoading()"
               class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors"
               type="button"
             >

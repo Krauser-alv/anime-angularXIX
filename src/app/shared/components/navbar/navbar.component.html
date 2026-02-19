@@ -16,17 +16,23 @@
                         <a routerLink="/" 
                             routerLinkActive="text-blue-700 dark:text-blue-500"
                             [routerLinkActiveOptions]="{exact: true}"
+                            [class.pointer-events-none]="isLoading()"
+                            [class.opacity-50]="isLoading()"
                             class="block py-2 px-3 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors"
                             aria-current="page">{{ 'nav.home' | translate }}</a>
                     </li>
                     <li>
                         <a routerLink="/directory"
                             routerLinkActive="text-blue-700 dark:text-blue-500"
+                            [class.pointer-events-none]="isLoading()"
+                            [class.opacity-50]="isLoading()"
                             class="block py-2 px-3 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.directory' | translate }}</a>
                     </li>
                     <li>
                         <a routerLink="/calendar"
                             routerLinkActive="text-blue-700 dark:text-blue-500"
+                            [class.pointer-events-none]="isLoading()"
+                            [class.opacity-50]="isLoading()"
                             class="block py-2 px-3 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.calendar' | translate }}</a>
                     </li>
                 </ul>
@@ -137,6 +143,8 @@
                         (click)="closeMobileMenu()"
                         routerLinkActive="bg-blue-700 text-white"
                         [routerLinkActiveOptions]="{exact: true}"
+                        [class.pointer-events-none]="isLoading()"
+                        [class.opacity-50]="isLoading()"
                         class="block py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors"
                         aria-current="page">{{ 'nav.home' | translate }}</a>
                 </li>
@@ -144,12 +152,16 @@
                     <a routerLink="/directory"
                         (click)="closeMobileMenu()"
                         routerLinkActive="bg-blue-700 text-white"
+                        [class.pointer-events-none]="isLoading()"
+                        [class.opacity-50]="isLoading()"
                         class="block py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.directory' | translate }}</a>
                 </li>
                 <li>
                     <a routerLink="/calendar"
                         (click)="closeMobileMenu()"
                         routerLinkActive="bg-blue-700 text-white"
+                        [class.pointer-events-none]="isLoading()"
+                        [class.opacity-50]="isLoading()"
                         class="block py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.calendar' | translate }}</a>
                 </li>
             </ul>
