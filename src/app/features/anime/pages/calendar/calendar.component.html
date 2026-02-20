@@ -63,7 +63,7 @@
             
             <!-- Skeleton grid -->
             <div class="p-4 pt-0">
-              <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                 @for (item of [1, 2, 3, 4, 5, 6, 7, 8]; track item) {
                   <div class="h-[320px] sm:h-[340px]">
                     <app-skeleton-poster-card></app-skeleton-poster-card>
@@ -109,7 +109,7 @@
             <!-- Grid de animes para esta fecha - Colapsable -->
             @if (isDayExpanded(entry[0])) {
               <div class="p-4 pt-0 animate-fade-in">
-                <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
                   @for (anime of entry[1]; track anime._id) {
                     <div class="group h-[320px] sm:h-[340px] [perspective:1000px] cursor-pointer" 
                          (click)="handleCardClick(anime, $event)">
