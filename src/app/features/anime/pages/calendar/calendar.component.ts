@@ -1,9 +1,7 @@
-import { Component, OnInit, signal, LOCALE_ID, Inject } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from '../../../../../environments/environments';
-import { NeonLoaderComponent } from '../../../../shared/components/neon-loader/neon-loader.component';
 import { StarRatingComponent } from '../../../../shared/components/star-rating/star-rating.component';
 import { SkeletonPosterCardComponent } from '../../../../shared/components/skeleton-poster-card/skeleton-poster-card.component';
 import { AnimesService } from '../../../../core/services/animes.service';
@@ -97,6 +95,21 @@ export class CalendarComponent implements OnInit {
       }
     } catch (error) {
       console.error('Error navegando al anime:', error);
+    }
+  }
+
+  handleCardClick(anime: TransformedAnime, event: Event) {
+    if (this.loading()) {
+      event.stopPropagation();
+      return;
+    }
+
+    if (anime.isAvailable) {
+      // Si está disponible, navegar al detalle
+      this.navigateToAnime(anime, event);
+    } else {
+      // Si no está disponible, abrir modal
+      this.openModal(anime, event);
     }
   }
 
@@ -201,7 +214,7 @@ export class CalendarComponent implements OnInit {
             try {
               // Obtener detalles del anime incluyendo próximo episodio
               const detailUrl = `https://api.themoviedb.org/3/tv/${anime.id}?api_key=${apiKey}&language=es-MX`;
-              const details: any = await this.http.get(detailUrl).toPromise();
+              const details: any = await this.http.get(detailUrl).toPromise() as any;
               
               let nextEpisode: EpisodeInfo | undefined;
               

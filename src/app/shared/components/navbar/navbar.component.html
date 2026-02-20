@@ -33,7 +33,14 @@
                             routerLinkActive="text-blue-700 dark:text-blue-500"
                             [class.pointer-events-none]="isLoading()"
                             [class.opacity-50]="isLoading()"
-                            class="block py-2 px-3 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.calendar' | translate }}</a>
+                            class="flex items-center gap-2 py-2 px-3 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">
+                            <span>{{ 'nav.calendar' | translate }}</span>
+                            <!-- Indicador "En emisión" -->
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                            </span>
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -162,7 +169,14 @@
                         routerLinkActive="bg-blue-700 text-white"
                         [class.pointer-events-none]="isLoading()"
                         [class.opacity-50]="isLoading()"
-                        class="block py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">{{ 'nav.calendar' | translate }}</a>
+                        class="flex items-center gap-2 py-2 px-4 rounded-lg text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 transition-colors">
+                        <span>{{ 'nav.calendar' | translate }}</span>
+                        <!-- Indicador "En emisión" -->
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                        </span>
+                    </a>
                 </li>
             </ul>
         </div>
